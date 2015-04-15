@@ -5,7 +5,7 @@ import com.wordnik.swagger.model.ApiKey;
 /**
  * Created by kongchen on 14/10/12.
  */
-public class JApiKey implements CanBeSwaggerModel<ApiKey>{
+public class JApiKey implements CanBeSwaggerModel<ApiKey> {
     private String passAs;
     private String keyname;
 

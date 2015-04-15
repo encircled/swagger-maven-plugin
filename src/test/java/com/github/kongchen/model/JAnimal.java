@@ -1,17 +1,17 @@
 package com.github.kongchen.model;
 
+import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
-import java.util.Date;
-
 /**
  * Created by chekong on 15/3/14.
  */
-@JsonTypeInfo( use=JsonTypeInfo.Id.NAME, include=JsonTypeInfo.As.PROPERTY, property="type" )
-@JsonSubTypes( { @JsonSubTypes.Type( value = JWildAnimal.class, name = "wild" ),
-        @JsonSubTypes.Type( value = JDomesticAnimal.class, name = "domestic" ) } )
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({ @JsonSubTypes.Type(value = JWildAnimal.class, name = "wild"),
+        @JsonSubTypes.Type(value = JDomesticAnimal.class, name = "domestic") })
 public class JAnimal {
     private String type;
     private Date date;
@@ -25,7 +25,7 @@ public class JAnimal {
         this.type = type;
     }
 
-    @ApiModelProperty (value = "Date added to the zoo", position = 2)
+    @ApiModelProperty(value = "Date added to the zoo", position = 2)
     public Date getDate() {
         return date;
     }

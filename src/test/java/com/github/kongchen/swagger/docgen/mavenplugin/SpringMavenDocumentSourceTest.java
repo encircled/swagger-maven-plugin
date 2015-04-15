@@ -1,5 +1,9 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.mustache.MustacheApi;
 import com.github.kongchen.swagger.docgen.mustache.MustacheDocument;
@@ -9,10 +13,6 @@ import org.apache.maven.plugin.logging.SystemStreamLog;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-
 public class SpringMavenDocumentSourceTest {
 
     private ApiSource prepareSpring() {
@@ -20,9 +20,7 @@ public class SpringMavenDocumentSourceTest {
         apiSource.setApiVersion("1.0");
         apiSource.setBasePath("http://example.com");
         apiSource.setLocations("com.github.kongchen.springmvc.controller");
-        apiSource.setOutputPath("sample.html");
-        apiSource.setOutputTemplate("https://github.com/kongchen/api-doc-template/blob/master/v1.1/html.mustache");
-        apiSource.setSwaggerDirectory(null);
+        apiSource.setOutputFolder("sample.html");
         apiSource.setSupportSpringMvc(true);
         return apiSource;
     }
@@ -50,20 +48,6 @@ public class SpringMavenDocumentSourceTest {
                             //ImplicitParams are not supported
 //                            Assert.assertEquals("ETag", op.getResponseHeader().getParas().get(0).getName());
 
-                            Assert.assertEquals("carId",
-                                    op.getRequestPath().getParas().get(0).getName());
-                            Assert.assertEquals("1.0 to 10.0",
-                                    op.getRequestPath().getParas().get(0).getAllowableValue());
-
-                            Assert.assertEquals("e",
-                                    op.getRequestQuery().getParas().get(0).getName());
-
-                            Assert.assertEquals("Accept",
-                                    op.getRequestHeader().getParas().get(0).getName());
-                            Assert.assertEquals("MediaType",
-                                    op.getRequestHeader().getParas().get(0).getType());
-                            Assert.assertEquals("application/json, application/*",
-                                    op.getRequestHeader().getParas().get(0).getAllowableValue());
                             Assert.assertEquals(op.getResponseMessages().size(), 2);
                             Assert.assertEquals(op.getResponseMessages().get(0).getMessage(), "Invalid ID supplied");
                             Assert.assertEquals(op.getResponseMessages().get(0).getCode(), 400);

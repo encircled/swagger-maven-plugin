@@ -1,16 +1,16 @@
 package com.github.kongchen.swagger.docgen.remote;
 
-import com.github.kongchen.swagger.docgen.remote.model.CanBeSwaggerModel;
-import scala.collection.JavaConversions;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.github.kongchen.swagger.docgen.remote.model.CanBeSwaggerModel;
+import scala.collection.JavaConversions;
 
 /**
  * Convert from java.util.List<T> to scala.collection.immutable.List<R>
  *
-* Created by kongchen on 14/10/11.
-*/
+ * Created by kongchen on 14/10/11.
+ */
 public class ListConverter<T extends CanBeSwaggerModel<R>, R> {
     private List<T> sources;
 

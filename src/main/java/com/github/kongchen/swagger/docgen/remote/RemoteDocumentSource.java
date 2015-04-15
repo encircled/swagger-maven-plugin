@@ -1,12 +1,21 @@
 package com.github.kongchen.swagger.docgen.remote;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.LogAdapter;
-import com.github.kongchen.swagger.docgen.remote.model.*;
+import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
+import com.github.kongchen.swagger.docgen.remote.model.JApiDescription;
+import com.github.kongchen.swagger.docgen.remote.model.JApiListing;
+import com.github.kongchen.swagger.docgen.remote.model.JApiListingReference;
+import com.github.kongchen.swagger.docgen.remote.model.JAuthorizationType;
+import com.github.kongchen.swagger.docgen.remote.model.JResourceListing;
 import com.github.kongchen.swagger.docgen.util.Utils;
 import com.wordnik.swagger.model.ApiListing;
 import com.wordnik.swagger.model.ApiListingReference;
@@ -18,10 +27,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -38,10 +43,8 @@ public class RemoteDocumentSource extends AbstractDocumentSource {
 
     private boolean withFormatSuffix = true;
 
-    public RemoteDocumentSource(LogAdapter logAdapter, URI requestURI, String outputTpl, String outputPath,
-                                String swaggerOutput, String mustacheFileRoot, boolean useOutputFlatStructure,
-                                String overridingModels, String apiComparator) {
-        super(logAdapter, outputPath, outputTpl, swaggerOutput, mustacheFileRoot, useOutputFlatStructure, overridingModels, apiComparator);
+    public RemoteDocumentSource(LogAdapter logAdapter, ApiSource apiSource, URI requestURI) {
+        super(logAdapter, apiSource);
         LOG = new LogAdapter(Logger.getLogger(RemoteDocumentSource.class));
         this.requestURI = requestURI;
         mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);

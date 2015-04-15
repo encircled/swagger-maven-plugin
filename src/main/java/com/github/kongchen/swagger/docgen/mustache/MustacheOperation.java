@@ -1,8 +1,13 @@
 package com.github.kongchen.swagger.docgen.mustache;
 
-import com.github.kongchen.swagger.docgen.DocTemplateConstants;
-import com.github.kongchen.swagger.docgen.GenerateException;
-import com.wordnik.swagger.core.ApiValues;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import java.util.regex.Pattern;
+
+import com.github.kongchen.swagger.docgen.StringTypeHolder;
+import com.github.kongchen.swagger.docgen.TypeUtils;
 import com.wordnik.swagger.model.Authorization;
 import com.wordnik.swagger.model.Operation;
 import com.wordnik.swagger.model.Parameter;
@@ -10,49 +15,27 @@ import com.wordnik.swagger.model.ResponseMessage;
 import scala.collection.JavaConversions;
 import scala.collection.mutable.Buffer;
 
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-import java.util.regex.Pattern;
-
 public class MustacheOperation {
+    private static final Pattern genericInNotes = Pattern
+            .compile("(/\\*.*<)((\\w+|((\\w+\\.)+\\w+))|(((\\w+|((\\w+\\.)+\\w+)),)+(\\w+|((\\w+\\.)+\\w+))))(>.*\\*/)");
     private final int opIndex;
-
     private final String httpMethod;
-
     private final String summary;
-
     private final String notes;
-
-    private final MustacheResponseClass responseClass;
-    private List<MustacheResponseClass> responseClasses = new ArrayList<MustacheResponseClass>();
-
+    private final StringTypeHolder responseClass;
     private final String nickname;
     private final List<MustacheAuthorization> authorizations = new ArrayList<MustacheAuthorization>();
-
-    private List<MustacheParameterSet> parameters;
-
     private final List<MustacheContentType> responseContentTypes = new ArrayList<MustacheContentType>();
-
-    private final List<MustacheContentType> parameterContentTypes = new ArrayList<MustacheContentType>();
-
-    private MustacheParameterSet requestQuery;
-    private MustacheParameterSet requestHeader;
-    private MustacheParameterSet requestBody;
-    private MustacheParameterSet requestPath;
-    private MustacheParameterSet responseHeader;
-
-    private static final Pattern genericInNotes = Pattern.compile("(/\\*.*<)((\\w+|((\\w+\\.)+\\w+))|(((\\w+|((\\w+\\.)+\\w+)),)+(\\w+|((\\w+\\.)+\\w+))))(>.*\\*/)");
-
-    private List<MustacheResponseMessage> responseMessages = new ArrayList<MustacheResponseMessage>();
-
+    private final List<MustacheContentType> parameterContentTypes = new ArrayList<>();
     List<MustacheSample> samples;
+    private List<StringTypeHolder> responseClasses = new ArrayList<>();
+    private List<MustacheParameterSet> parameters;
+    private List<MustacheResponseMessage> responseMessages = new ArrayList<MustacheResponseMessage>();
 
     public MustacheOperation(MustacheDocument mustacheDocument, Operation op) {
         if (op.authorizations() != null && op.authorizations().size() > 0) {
             Buffer<Authorization> authorBuffer = op.authorizations().toBuffer();
-            for(Authorization authorization : JavaConversions.asJavaList(authorBuffer)) {
+            for (Authorization authorization : JavaConversions.asJavaList(authorBuffer)) {
                 this.authorizations.add(new MustacheAuthorization(authorization));
             }
         }
@@ -66,33 +49,26 @@ public class MustacheOperation {
             Buffer<Parameter> buffer = op.parameters().toBuffer();
             this.parameters = mustacheDocument.analyzeParameters(JavaConversions.asJavaList(buffer));
         }
-        responseClass = new MustacheResponseClass(op.responseClass() + notesAndGenericStr.getValue());
+        String responseText;
+        if (op.responseClass() == null && notesAndGenericStr.getValue().isEmpty()) {
+            responseText = null;
+        } else {
+            responseText = op.responseClass() + notesAndGenericStr.getValue();
+        }
+        responseClass = TypeUtils.parseClassNamesFromGenericString(responseText);
         if (op.responseMessages() != null) {
-            Buffer<ResponseMessage> errorbuffer = op.responseMessages().toBuffer();
-            List<ResponseMessage> responseMessages = JavaConversions.asJavaList(errorbuffer);
+            Buffer<ResponseMessage> errorBuffer = op.responseMessages().toBuffer();
+            List<ResponseMessage> responseMessages = JavaConversions.asJavaList(errorBuffer);
             for (ResponseMessage responseMessage : responseMessages) {
                 if (!responseMessage.responseModel().isEmpty()) {
                     String className = responseMessage.responseModel().get();
-                    this.responseClasses.add(new MustacheResponseClass(className));
+                    this.responseClasses.add(TypeUtils.parseClassNamesFromGenericString(className));
                 }
                 this.responseMessages.add(new MustacheResponseMessage(responseMessage));
             }
         }
         if (parameters == null) {
             return;
-        }
-        for (MustacheParameterSet para : parameters) {
-            if (para.getParamType().equals(ApiValues.TYPE_QUERY())) {
-                this.requestQuery = para;
-            } else if (para.getParamType().equals(ApiValues.TYPE_HEADER())) {
-                this.requestHeader = para;
-            } else if (para.getParamType().equals(ApiValues.TYPE_BODY())) {
-                this.requestBody = para;
-            } else if (para.getParamType().equals(ApiValues.TYPE_PATH())) {
-                this.requestPath = para;
-            } else if (para.getParamType().equals(DocTemplateConstants.TYPE_RESPONSE_HEADER)) {
-                this.responseHeader = para;
-            }
         }
 
         List<String> produces = JavaConversions.asJavaList(op.produces());
@@ -106,59 +82,20 @@ public class MustacheOperation {
         }
     }
 
+    // TODO delete it?
     private AbstractMap.SimpleEntry<String, String> parseGenericFromNotes(String notes) {
         Scanner scanner = new Scanner(notes);
         String genericString = scanner.findInLine(genericInNotes);
         if (genericString != null) {
-            return new AbstractMap.SimpleEntry<String, String>(notes.replaceFirst(genericInNotes.pattern(), ""),
+            return new AbstractMap.SimpleEntry<>(notes.replaceFirst(genericInNotes.pattern(), ""),
                     genericString.replaceAll("/\\*", "").replaceAll("\\*/", "").trim());
         } else {
-            return new AbstractMap.SimpleEntry<String, String>(notes, "");
+            return new AbstractMap.SimpleEntry<>(notes, "");
         }
     }
 
     public List<MustacheAuthorization> getAuthorizations() {
         return authorizations;
-    }
-
-    public MustacheParameterSet getResponseHeader() {
-        return responseHeader;
-    }
-
-    public void setResponseHeader(MustacheParameterSet responseHeader) {
-        this.responseHeader = responseHeader;
-    }
-
-    public MustacheParameterSet getRequestPath() {
-        return requestPath;
-    }
-
-    public void setRequestPath(MustacheParameterSet requestPath) {
-        this.requestPath = requestPath;
-    }
-
-    public MustacheParameterSet getRequestQuery() {
-        return requestQuery;
-    }
-
-    public void setRequestQuery(MustacheParameterSet requestQuery) {
-        this.requestQuery = requestQuery;
-    }
-
-    public MustacheParameterSet getRequestHeader() {
-        return requestHeader;
-    }
-
-    public void setRequestHeader(MustacheParameterSet requestHeader) {
-        this.requestHeader = requestHeader;
-    }
-
-    public MustacheParameterSet getRequestBody() {
-        return requestBody;
-    }
-
-    public void setRequestBody(MustacheParameterSet requestBody) {
-        this.requestBody = requestBody;
     }
 
     public List<MustacheSample> getSamples() {
@@ -205,11 +142,11 @@ public class MustacheOperation {
         return responseMessages;
     }
 
-    public MustacheResponseClass getResponseClass() {
+    public StringTypeHolder getResponseClass() {
         return responseClass;
     }
 
-    public List<MustacheResponseClass> getResponseClasses() {
+    public List<StringTypeHolder> getResponseClasses() {
         return responseClasses;
     }
 

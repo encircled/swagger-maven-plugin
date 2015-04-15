@@ -1,8 +1,8 @@
 package com.github.kongchen.jaxrs;
 
-import com.github.kongchen.swagger.docgen.mustache.MustacheApi;
-
 import java.util.Comparator;
+
+import com.github.kongchen.swagger.docgen.mustache.MustacheApi;
 
 /**
  * Created by chekong on 14-12-11.

@@ -6,7 +6,7 @@ import com.wordnik.swagger.model.ResponseMessage;
 /**
  * Created by chekong on 10/11/14.
  */
-public  class JResponseMessage implements CanBeSwaggerModel<ResponseMessage> {
+public class JResponseMessage implements CanBeSwaggerModel<ResponseMessage> {
     private int code;
     private String message;
     private String responseModel;

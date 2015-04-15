@@ -99,7 +99,7 @@ public class JParameter implements CanBeSwaggerModel<Parameter> {
     @Override
     public Parameter toSwaggerModel() {
         AllowableValues a = allowableValues == null ? null : allowableValues.toSwaggerModel();
-        return new Parameter(name, Utils.getOption(description), Utils.getOption(defaultValue),required, allowMultiple,
+        return new Parameter(name, Utils.getOption(description), Utils.getOption(defaultValue), required, allowMultiple,
                 dataType, a, paramType, Utils.getOption(paramAccess));
     }
 

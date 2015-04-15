@@ -6,5 +6,9 @@
   "DateTimeMapping": {
     "className": "org.joda.time.DateTime",
     "jsonString": "{\"id\": \"DateTime\",\"properties\": {\"value\": {\"required\": true, \"description\": \"Date in ISO-8601 format\", \"notes\": \"Add any notes you like here\", \"type\": \"string\", \"format\": \"date-time\"}}}"
+  },
+  "Request": {
+    "className": "net.homecredit.embedit.framework.envelope.Request",
+    "jsonString": "{\"id\": \"Request\",\"properties\": {\"content\": {\"required\": true, \"description\": \"Content of request\", \"notes\": \"Concrete request body object\", \"type\": \"any\", \"format\": \"any\"}}}"
   }
 }

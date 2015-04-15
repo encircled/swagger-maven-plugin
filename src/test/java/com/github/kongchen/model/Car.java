@@ -1,10 +1,9 @@
 package com.github.kongchen.model;
 
-import com.wordnik.swagger.annotations.ApiModel;
-import com.wordnik.swagger.annotations.ApiModelProperty;
-
 import java.util.List;
 
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 import org.joda.time.DateTime;
 
 /**
@@ -95,11 +94,11 @@ public class Car {
         this.id = id;
     }
 
-	public DateTime getFirstRegistration() {
-		return firstRegistration;
-	}
+    public DateTime getFirstRegistration() {
+        return firstRegistration;
+    }
 
-	public void setFirstRegistration(DateTime firstRegistration) {
-		this.firstRegistration = firstRegistration;
-	}
+    public void setFirstRegistration(DateTime firstRegistration) {
+        this.firstRegistration = firstRegistration;
+    }
 }

@@ -3,29 +3,29 @@
 <title>API Document</title>
 
 <xmp theme="united" style="display:none;">
-#API Document
+    #API Document
 
 
-## BasePath: http://petstore.swagger.wordnik.com/api
+    ## BasePath: http://petstore.swagger.wordnik.com/api
 
-## Api Version: 0.2
+    ## Api Version: 0.2
 
-## Resources
-### 1. /user
-#### Overview
-Operations about user
+    ## Resources
+    ### 1. /user
+    #### Overview
+    Operations about user
 
-#### 1.1 `/user.{format}/createWithArray`
-##### 1.1.1 createUsersWithArrayInput
-**POST** `/user.{format}/createWithArray`
+    #### 1.1 `/user.{format}/createWithArray`
+    ##### 1.1.1 createUsersWithArrayInput
+    **POST** `/user.{format}/createWithArray`
 
-Creates list of users with given input array
+    Creates list of users with given input array
 
 
-###### URL
+    ###### URL
     http://petstore.swagger.wordnik.com/api/user.{format}/createWithArray
-###### Parameters
-- body
+    ###### Parameters
+    - body
 
     <table border="1">
         <tr>
@@ -43,28 +43,27 @@ Creates list of users with given input array
     </table>
 
 
+    ###### Errors
+    <table border="1">
+        <tr>
+            <th>Status Code</th>
+            <th>Reason</th>
+        </tr>
+    </table>
 
-###### Errors
-<table border="1">
-    <tr>
-        <th>Status Code</th>
-        <th>Reason</th>
-    </tr>
-</table>
 
+    - - -
+    #### 1.2 `/user.{format}`
+    ##### 1.2.1 createUser
+    **POST** `/user.{format}`
 
-- - -
-#### 1.2 `/user.{format}`
-##### 1.2.1 createUser
-**POST** `/user.{format}`
+    Create user
+    This can only be done by the logged in user.
 
-Create user
-This can only be done by the logged in user.
-
-###### URL
+    ###### URL
     http://petstore.swagger.wordnik.com/api/user.{format}
-###### Parameters
-- body
+    ###### Parameters
+    - body
 
     <table border="1">
         <tr>
@@ -82,28 +81,27 @@ This can only be done by the logged in user.
     </table>
 
 
-
-###### Errors
-<table border="1">
-    <tr>
-        <th>Status Code</th>
-        <th>Reason</th>
-    </tr>
-</table>
-
-
-- - -
-#### 1.3 `/user.{format}/createWithList`
-##### 1.3.1 createUsersWithListInput
-**POST** `/user.{format}/createWithList`
-
-Creates list of users with given list input
+    ###### Errors
+    <table border="1">
+        <tr>
+            <th>Status Code</th>
+            <th>Reason</th>
+        </tr>
+    </table>
 
 
-###### URL
+    - - -
+    #### 1.3 `/user.{format}/createWithList`
+    ##### 1.3.1 createUsersWithListInput
+    **POST** `/user.{format}/createWithList`
+
+    Creates list of users with given list input
+
+
+    ###### URL
     http://petstore.swagger.wordnik.com/api/user.{format}/createWithList
-###### Parameters
-- body
+    ###### Parameters
+    - body
 
     <table border="1">
         <tr>
@@ -121,28 +119,27 @@ Creates list of users with given list input
     </table>
 
 
+    ###### Errors
+    <table border="1">
+        <tr>
+            <th>Status Code</th>
+            <th>Reason</th>
+        </tr>
+    </table>
 
-###### Errors
-<table border="1">
-    <tr>
-        <th>Status Code</th>
-        <th>Reason</th>
-    </tr>
-</table>
 
+    - - -
+    #### 1.4 `/user.{format}/{username}`
+    ##### 1.4.1 updateUser
+    **PUT** `/user.{format}/{username}`
 
-- - -
-#### 1.4 `/user.{format}/{username}`
-##### 1.4.1 updateUser
-**PUT** `/user.{format}/{username}`
+    Updated user
+    This can only be done by the logged in user.
 
-Updated user
-This can only be done by the logged in user.
-
-###### URL
+    ###### URL
     http://petstore.swagger.wordnik.com/api/user.{format}/{username}
-###### Parameters
-- body
+    ###### Parameters
+    - body
 
     <table border="1">
         <tr>
@@ -158,7 +155,7 @@ This can only be done by the logged in user.
             <td><a href="#User">User</a></td>
         </tr>
     </table>
-- path
+    - path
 
     <table border="1">
         <tr>
@@ -176,13 +173,12 @@ This can only be done by the logged in user.
     </table>
 
 
-
-###### Errors
-<table border="1">
-    <tr>
-        <th>Status Code</th>
-        <th>Reason</th>
-    </tr>
+    ###### Errors
+    <table border="1">
+        <tr>
+            <th>Status Code</th>
+            <th>Reason</th>
+        </tr>
         <tr>
             <td>400</td>
             <td>Invalid username supplied</td>
@@ -191,20 +187,20 @@ This can only be done by the logged in user.
             <td>404</td>
             <td>User not found</td>
         </tr>
-</table>
+    </table>
 
 
-- - -
-##### 1.4.2 deleteUser
-**DELETE** `/user.{format}/{username}`
+    - - -
+    ##### 1.4.2 deleteUser
+    **DELETE** `/user.{format}/{username}`
 
-Delete user
-This can only be done by the logged in user.
+    Delete user
+    This can only be done by the logged in user.
 
-###### URL
+    ###### URL
     http://petstore.swagger.wordnik.com/api/user.{format}/{username}
-###### Parameters
-- path
+    ###### Parameters
+    - path
 
     <table border="1">
         <tr>
@@ -222,13 +218,12 @@ This can only be done by the logged in user.
     </table>
 
 
-
-###### Errors
-<table border="1">
-    <tr>
-        <th>Status Code</th>
-        <th>Reason</th>
-    </tr>
+    ###### Errors
+    <table border="1">
+        <tr>
+            <th>Status Code</th>
+            <th>Reason</th>
+        </tr>
         <tr>
             <td>400</td>
             <td>Invalid username supplied</td>
@@ -237,20 +232,20 @@ This can only be done by the logged in user.
             <td>404</td>
             <td>User not found</td>
         </tr>
-</table>
+    </table>
 
 
-- - -
-##### 1.4.3 getUserByName
-**GET** `/user.{format}/{username}`
+    - - -
+    ##### 1.4.3 getUserByName
+    **GET** `/user.{format}/{username}`
 
-Get user by user name
+    Get user by user name
 
 
-###### URL
+    ###### URL
     http://petstore.swagger.wordnik.com/api/user.{format}/{username}
-###### Parameters
-- path
+    ###### Parameters
+    - path
 
     <table border="1">
         <tr>
@@ -267,16 +262,16 @@ Get user by user name
         </tr>
     </table>
 
-###### Response
-[User](#User)
+    ###### Response
+    [User](#User)
 
 
-###### Errors
-<table border="1">
-    <tr>
-        <th>Status Code</th>
-        <th>Reason</th>
-    </tr>
+    ###### Errors
+    <table border="1">
+        <tr>
+            <th>Status Code</th>
+            <th>Reason</th>
+        </tr>
         <tr>
             <td>400</td>
             <td>Invalid username supplied</td>
@@ -285,21 +280,21 @@ Get user by user name
             <td>404</td>
             <td>User not found</td>
         </tr>
-</table>
+    </table>
 
 
-- - -
-#### 1.5 `/user.{format}/login`
-##### 1.5.1 loginUser
-**GET** `/user.{format}/login`
+    - - -
+    #### 1.5 `/user.{format}/login`
+    ##### 1.5.1 loginUser
+    **GET** `/user.{format}/login`
 
-Logs user into the system
+    Logs user into the system
 
 
-###### URL
+    ###### URL
     http://petstore.swagger.wordnik.com/api/user.{format}/login
-###### Parameters
-- query
+    ###### Parameters
+    - query
 
     <table border="1">
         <tr>
@@ -323,59 +318,57 @@ Logs user into the system
     </table>
 
 
-
-###### Errors
-<table border="1">
-    <tr>
-        <th>Status Code</th>
-        <th>Reason</th>
-    </tr>
+    ###### Errors
+    <table border="1">
+        <tr>
+            <th>Status Code</th>
+            <th>Reason</th>
+        </tr>
         <tr>
             <td>400</td>
             <td>Invalid username and password combination</td>
         </tr>
-</table>
+    </table>
 
 
-- - -
-#### 1.6 `/user.{format}/logout`
-##### 1.6.1 logoutUser
-**GET** `/user.{format}/logout`
+    - - -
+    #### 1.6 `/user.{format}/logout`
+    ##### 1.6.1 logoutUser
+    **GET** `/user.{format}/logout`
 
-Logs out current logged in user session
+    Logs out current logged in user session
 
 
-###### URL
+    ###### URL
     http://petstore.swagger.wordnik.com/api/user.{format}/logout
-###### Parameters
+    ###### Parameters
 
 
+    ###### Errors
+    <table border="1">
+        <tr>
+            <th>Status Code</th>
+            <th>Reason</th>
+        </tr>
+    </table>
 
-###### Errors
-<table border="1">
-    <tr>
-        <th>Status Code</th>
-        <th>Reason</th>
-    </tr>
-</table>
 
+    - - -
+    ### 2. /pet
+    #### Overview
+    Operations about pets
 
-- - -
-### 2. /pet
-#### Overview
-Operations about pets
+    #### 2.1 `/pet.{format}/{petId}`
+    ##### 2.1.1 getPetById
+    **GET** `/pet.{format}/{petId}`
 
-#### 2.1 `/pet.{format}/{petId}`
-##### 2.1.1 getPetById
-**GET** `/pet.{format}/{petId}`
+    Find pet by ID
+    Returns a pet based on ID
 
-Find pet by ID
-Returns a pet based on ID
-
-###### URL
+    ###### URL
     http://petstore.swagger.wordnik.com/api/pet.{format}/{petId}
-###### Parameters
-- path
+    ###### Parameters
+    - path
 
     <table border="1">
         <tr>
@@ -392,16 +385,16 @@ Returns a pet based on ID
         </tr>
     </table>
 
-###### Response
-[Pet](#Pet)
+    ###### Response
+    [Pet](#Pet)
 
 
-###### Errors
-<table border="1">
-    <tr>
-        <th>Status Code</th>
-        <th>Reason</th>
-    </tr>
+    ###### Errors
+    <table border="1">
+        <tr>
+            <th>Status Code</th>
+            <th>Reason</th>
+        </tr>
         <tr>
             <td>400</td>
             <td>Invalid ID supplied</td>
@@ -410,21 +403,21 @@ Returns a pet based on ID
             <td>404</td>
             <td>Pet not found</td>
         </tr>
-</table>
+    </table>
 
 
-- - -
-#### 2.2 `/pet.{format}`
-##### 2.2.1 addPet
-**POST** `/pet.{format}`
+    - - -
+    #### 2.2 `/pet.{format}`
+    ##### 2.2.1 addPet
+    **POST** `/pet.{format}`
 
-Add a new pet to the store
+    Add a new pet to the store
 
 
-###### URL
+    ###### URL
     http://petstore.swagger.wordnik.com/api/pet.{format}
-###### Parameters
-- body
+    ###### Parameters
+    - body
 
     <table border="1">
         <tr>
@@ -442,31 +435,30 @@ Add a new pet to the store
     </table>
 
 
-
-###### Errors
-<table border="1">
-    <tr>
-        <th>Status Code</th>
-        <th>Reason</th>
-    </tr>
+    ###### Errors
+    <table border="1">
+        <tr>
+            <th>Status Code</th>
+            <th>Reason</th>
+        </tr>
         <tr>
             <td>405</td>
             <td>Invalid input</td>
         </tr>
-</table>
+    </table>
 
 
-- - -
-##### 2.2.2 updatePet
-**PUT** `/pet.{format}`
+    - - -
+    ##### 2.2.2 updatePet
+    **PUT** `/pet.{format}`
 
-Update an existing pet
+    Update an existing pet
 
 
-###### URL
+    ###### URL
     http://petstore.swagger.wordnik.com/api/pet.{format}
-###### Parameters
-- body
+    ###### Parameters
+    - body
 
     <table border="1">
         <tr>
@@ -484,13 +476,12 @@ Update an existing pet
     </table>
 
 
-
-###### Errors
-<table border="1">
-    <tr>
-        <th>Status Code</th>
-        <th>Reason</th>
-    </tr>
+    ###### Errors
+    <table border="1">
+        <tr>
+            <th>Status Code</th>
+            <th>Reason</th>
+        </tr>
         <tr>
             <td>400</td>
             <td>Invalid ID supplied</td>
@@ -503,21 +494,21 @@ Update an existing pet
             <td>405</td>
             <td>Validation exception</td>
         </tr>
-</table>
+    </table>
 
 
-- - -
-#### 2.3 `/pet.{format}/findByStatus`
-##### 2.3.1 findPetsByStatus
-**GET** `/pet.{format}/findByStatus`
+    - - -
+    #### 2.3 `/pet.{format}/findByStatus`
+    ##### 2.3.1 findPetsByStatus
+    **GET** `/pet.{format}/findByStatus`
 
-Finds Pets by status
-Multiple status values can be provided with comma seperated strings
+    Finds Pets by status
+    Multiple status values can be provided with comma seperated strings
 
-###### URL
+    ###### URL
     http://petstore.swagger.wordnik.com/api/pet.{format}/findByStatus
-###### Parameters
-- query
+    ###### Parameters
+    - query
 
     <table border="1">
         <tr>
@@ -534,35 +525,35 @@ Multiple status values can be provided with comma seperated strings
         </tr>
     </table>
 
-###### Response
-[List[Pet]](#Pet)
+    ###### Response
+    [List[Pet]](#Pet)
 
 
-###### Errors
-<table border="1">
-    <tr>
-        <th>Status Code</th>
-        <th>Reason</th>
-    </tr>
+    ###### Errors
+    <table border="1">
+        <tr>
+            <th>Status Code</th>
+            <th>Reason</th>
+        </tr>
         <tr>
             <td>400</td>
             <td>Invalid status value</td>
         </tr>
-</table>
+    </table>
 
 
-- - -
-#### 2.4 `/pet.{format}/findByTags`
-##### 2.4.1 findPetsByTags
-**GET** `/pet.{format}/findByTags`
+    - - -
+    #### 2.4 `/pet.{format}/findByTags`
+    ##### 2.4.1 findPetsByTags
+    **GET** `/pet.{format}/findByTags`
 
-Finds Pets by tags
-Muliple tags can be provided with comma seperated strings. Use tag1, tag2, tag3 for testing.
+    Finds Pets by tags
+    Muliple tags can be provided with comma seperated strings. Use tag1, tag2, tag3 for testing.
 
-###### URL
+    ###### URL
     http://petstore.swagger.wordnik.com/api/pet.{format}/findByTags
-###### Parameters
-- query
+    ###### Parameters
+    - query
 
     <table border="1">
         <tr>
@@ -579,39 +570,39 @@ Muliple tags can be provided with comma seperated strings. Use tag1, tag2, tag3 
         </tr>
     </table>
 
-###### Response
-[List[Pet]](#Pet)
+    ###### Response
+    [List[Pet]](#Pet)
 
 
-###### Errors
-<table border="1">
-    <tr>
-        <th>Status Code</th>
-        <th>Reason</th>
-    </tr>
+    ###### Errors
+    <table border="1">
+        <tr>
+            <th>Status Code</th>
+            <th>Reason</th>
+        </tr>
         <tr>
             <td>400</td>
             <td>Invalid tag value</td>
         </tr>
-</table>
+    </table>
 
 
-- - -
-### 3. /store
-#### Overview
-Operations about store
+    - - -
+    ### 3. /store
+    #### Overview
+    Operations about store
 
-#### 3.1 `/store.{format}/order/{orderId}`
-##### 3.1.1 getOrderById
-**GET** `/store.{format}/order/{orderId}`
+    #### 3.1 `/store.{format}/order/{orderId}`
+    ##### 3.1.1 getOrderById
+    **GET** `/store.{format}/order/{orderId}`
 
-Find purchase order by ID
-For valid response try integer IDs with value <= 5. Anything above 5 or nonintegers will generate API errors
+    Find purchase order by ID
+    For valid response try integer IDs with value <= 5. Anything above 5 or nonintegers will generate API errors
 
-###### URL
+    ###### URL
     http://petstore.swagger.wordnik.com/api/store.{format}/order/{orderId}
-###### Parameters
-- path
+    ###### Parameters
+    - path
 
     <table border="1">
         <tr>
@@ -628,16 +619,16 @@ For valid response try integer IDs with value <= 5. Anything above 5 or noninteg
         </tr>
     </table>
 
-###### Response
-[Order](#Order)
+    ###### Response
+    [Order](#Order)
 
 
-###### Errors
-<table border="1">
-    <tr>
-        <th>Status Code</th>
-        <th>Reason</th>
-    </tr>
+    ###### Errors
+    <table border="1">
+        <tr>
+            <th>Status Code</th>
+            <th>Reason</th>
+        </tr>
         <tr>
             <td>400</td>
             <td>Invalid ID supplied</td>
@@ -646,20 +637,20 @@ For valid response try integer IDs with value <= 5. Anything above 5 or noninteg
             <td>404</td>
             <td>Order not found</td>
         </tr>
-</table>
+    </table>
 
 
-- - -
-##### 3.1.2 deleteOrder
-**DELETE** `/store.{format}/order/{orderId}`
+    - - -
+    ##### 3.1.2 deleteOrder
+    **DELETE** `/store.{format}/order/{orderId}`
 
-Delete purchase order by ID
-For valid response try integer IDs with value < 1000. Anything above 1000 or nonintegers will generate API errors
+    Delete purchase order by ID
+    For valid response try integer IDs with value < 1000. Anything above 1000 or nonintegers will generate API errors
 
-###### URL
+    ###### URL
     http://petstore.swagger.wordnik.com/api/store.{format}/order/{orderId}
-###### Parameters
-- path
+    ###### Parameters
+    - path
 
     <table border="1">
         <tr>
@@ -677,13 +668,12 @@ For valid response try integer IDs with value < 1000. Anything above 1000 or non
     </table>
 
 
-
-###### Errors
-<table border="1">
-    <tr>
-        <th>Status Code</th>
-        <th>Reason</th>
-    </tr>
+    ###### Errors
+    <table border="1">
+        <tr>
+            <th>Status Code</th>
+            <th>Reason</th>
+        </tr>
         <tr>
             <td>400</td>
             <td>Invalid ID supplied</td>
@@ -692,21 +682,21 @@ For valid response try integer IDs with value < 1000. Anything above 1000 or non
             <td>404</td>
             <td>Order not found</td>
         </tr>
-</table>
+    </table>
 
 
-- - -
-#### 3.2 `/store.{format}/order`
-##### 3.2.1 placeOrder
-**POST** `/store.{format}/order`
+    - - -
+    #### 3.2 `/store.{format}/order`
+    ##### 3.2.1 placeOrder
+    **POST** `/store.{format}/order`
 
-Place an order for a pet
+    Place an order for a pet
 
 
-###### URL
+    ###### URL
     http://petstore.swagger.wordnik.com/api/store.{format}/order
-###### Parameters
-- body
+    ###### Parameters
+    - body
 
     <table border="1">
         <tr>
@@ -724,35 +714,34 @@ Place an order for a pet
     </table>
 
 
-
-###### Errors
-<table border="1">
-    <tr>
-        <th>Status Code</th>
-        <th>Reason</th>
-    </tr>
+    ###### Errors
+    <table border="1">
+        <tr>
+            <th>Status Code</th>
+            <th>Reason</th>
+        </tr>
         <tr>
             <td>400</td>
             <td>Invalid order</td>
         </tr>
-</table>
+    </table>
 
 
-- - -
+    - - -
 
-## Data Types
+    ## Data Types
 
 
-## <a name="Category">Category</a>
+    ## <a name="Category">Category</a>
 
-<table border="1">
-    <tr>
-        <th>type</th>
-        <th>required</th>
-        <th>access</th>
-        <th>description</th>
-        <th>notes</th>
-    </tr>
+    <table border="1">
+        <tr>
+            <th>type</th>
+            <th>required</th>
+            <th>access</th>
+            <th>description</th>
+            <th>notes</th>
+        </tr>
         <tr>
             <th>id</th>
             <td>long</td>
@@ -767,20 +756,19 @@ Place an order for a pet
             <td>-</td>
             <td>-</td>
         </tr>
-</table>
+    </table>
 
 
+    ## <a name="Order">Order</a>
 
-## <a name="Order">Order</a>
-
-<table border="1">
-    <tr>
-        <th>type</th>
-        <th>required</th>
-        <th>access</th>
-        <th>description</th>
-        <th>notes</th>
-    </tr>
+    <table border="1">
+        <tr>
+            <th>type</th>
+            <th>required</th>
+            <th>access</th>
+            <th>description</th>
+            <th>notes</th>
+        </tr>
         <tr>
             <th>id</th>
             <td>long</td>
@@ -816,20 +804,19 @@ Place an order for a pet
             <td>-</td>
             <td>-</td>
         </tr>
-</table>
+    </table>
 
 
+    ## <a name="Pet">Pet</a>
 
-## <a name="Pet">Pet</a>
-
-<table border="1">
-    <tr>
-        <th>type</th>
-        <th>required</th>
-        <th>access</th>
-        <th>description</th>
-        <th>notes</th>
-    </tr>
+    <table border="1">
+        <tr>
+            <th>type</th>
+            <th>required</th>
+            <th>access</th>
+            <th>description</th>
+            <th>notes</th>
+        </tr>
         <tr>
             <th>tags</th>
             <td><a href="#Tag">Array:Tag</a></td>
@@ -872,20 +859,19 @@ Place an order for a pet
             <td>-</td>
             <td>-</td>
         </tr>
-</table>
+    </table>
 
 
+    ## <a name="Tag">Tag</a>
 
-## <a name="Tag">Tag</a>
-
-<table border="1">
-    <tr>
-        <th>type</th>
-        <th>required</th>
-        <th>access</th>
-        <th>description</th>
-        <th>notes</th>
-    </tr>
+    <table border="1">
+        <tr>
+            <th>type</th>
+            <th>required</th>
+            <th>access</th>
+            <th>description</th>
+            <th>notes</th>
+        </tr>
         <tr>
             <th>id</th>
             <td>long</td>
@@ -900,20 +886,19 @@ Place an order for a pet
             <td>-</td>
             <td>-</td>
         </tr>
-</table>
+    </table>
 
 
+    ## <a name="User">User</a>
 
-## <a name="User">User</a>
-
-<table border="1">
-    <tr>
-        <th>type</th>
-        <th>required</th>
-        <th>access</th>
-        <th>description</th>
-        <th>notes</th>
-    </tr>
+    <table border="1">
+        <tr>
+            <th>type</th>
+            <th>required</th>
+            <th>access</th>
+            <th>description</th>
+            <th>notes</th>
+        </tr>
         <tr>
             <th>id</th>
             <td>long</td>
@@ -970,8 +955,7 @@ Place an order for a pet
             <td>-</td>
             <td>-</td>
         </tr>
-</table>
-
+    </table>
 
 
 </xmp>

@@ -1,10 +1,10 @@
 package com.github.kongchen.swagger.docgen.mustache;
 
-import com.github.kongchen.swagger.docgen.util.Utils;
-import com.wordnik.swagger.model.ApiDescription;
-
 import java.util.LinkedList;
 import java.util.List;
+
+import com.github.kongchen.swagger.docgen.util.Utils;
+import com.wordnik.swagger.model.ApiDescription;
 
 public class MustacheApi {
     private final String description;

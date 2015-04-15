@@ -10,7 +10,7 @@ public class Parent {
     private String cannotsee;
     protected String cansee;
 
-    public Child getChild(){
+    public Child getChild() {
         return child;
     }
 

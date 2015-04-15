@@ -6,7 +6,9 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.kongchen.swagger.docgen.remote.model.*;
+import com.github.kongchen.swagger.docgen.remote.model.JAllowableValues;
+import com.github.kongchen.swagger.docgen.remote.model.JModelProperty;
+import com.github.kongchen.swagger.docgen.remote.model.JModelRef;
 import com.github.kongchen.swagger.docgen.util.Utils;
 import com.wordnik.swagger.model.SwaggerSerializers;
 import scala.Tuple2;
@@ -31,9 +33,9 @@ public class JModelPropertyDeserializer extends com.fasterxml.jackson.databind.J
         JsonNode node = jp.readValueAsTree();//jp.getCodec().readTree(jp);
         String type = node.get("type") == null ? null : node.get("type").asText();//"type": "integer",
         jModelProperty.setType(type);
-        
-        String format = node.get("format")== null ? null : node.get("format").asText();//    "format": "int64",
-        String realType = SwaggerSerializers.fromJsonSchemaType(new Tuple2<String, String>(type,format));
+
+        String format = node.get("format") == null ? null : node.get("format").asText();//    "format": "int64",
+        String realType = SwaggerSerializers.fromJsonSchemaType(new Tuple2<String, String>(type, format));
 //        jModelProperty.setQualifiedType(qualifiedType);
         jModelProperty.setType(realType);
         if (format != null && format.equalsIgnoreCase("date-time")) {
@@ -41,19 +43,19 @@ public class JModelPropertyDeserializer extends com.fasterxml.jackson.databind.J
             jModelProperty.setType("Date");
 //            jModelProperty.setQualifiedType("org.joda.time.DateTime");
         }
-        
-        int position = node.get("position")== null ? 0 : node.get("position").asInt();
+
+        int position = node.get("position") == null ? 0 : node.get("position").asInt();
         jModelProperty.setPosition(position);
-        
+
         boolean required = node.get("required") == null ? false : node.get("required").asBoolean();
         jModelProperty.setRequired(required);
-        
-        String description = node.get("description")== null ? null : node.get("description").asText();//description": "unique identifier for the pet",
+
+        String description = node.get("description") == null ? null : node.get("description").asText();//description": "unique identifier for the pet",
         jModelProperty.setDescription(description);
-        
-        String $ref = node.get("$ref")== null ? null : node.get("$ref").asText();
+
+        String $ref = node.get("$ref") == null ? null : node.get("$ref").asText();
         jModelProperty.set$ref($ref);
-        
+
         JsonNode jsonNode = node.get("items");
         if (jsonNode != null) {
             JModelRef items = jsonNode.traverse(jp.getCodec()).readValueAs(JModelRef.class);
@@ -70,8 +72,8 @@ public class JModelPropertyDeserializer extends com.fasterxml.jackson.databind.J
         JAllowableValues values = Utils.getAllowableValuesFromJsonNode(node);
 
         jModelProperty.setAllowableValues(values);
-       
-        
+
+
         return jModelProperty;
     }
 

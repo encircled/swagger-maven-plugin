@@ -5,7 +5,7 @@ package issue17;
  * User: kongchen
  * Date: 7/31/13
  */
-public class Child extends Parent{
+public class Child extends Parent {
     private String name;
 
     public String getName() {

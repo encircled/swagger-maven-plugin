@@ -1,8 +1,8 @@
 package com.github.kongchen.model;
 
-import com.wordnik.swagger.annotations.ApiModelProperty;
-
 import java.util.List;
+
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /**
  * Created with IntelliJ IDEA.

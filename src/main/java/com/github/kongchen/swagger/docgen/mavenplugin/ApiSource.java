@@ -8,6 +8,7 @@ import com.github.kongchen.swagger.docgen.GenerateException;
 import com.wordnik.swagger.annotations.Api;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.reflections.Reflections;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,56 +17,38 @@ import org.reflections.Reflections;
  */
 public class ApiSource {
 
+    @Parameter
+    public String mustacheFileRoot;
+    @Parameter
+    public boolean useOutputFlatStructure = true;
     /**
-     * Java classes containing Swagger's annotation <code>@Api</code>, or Java packages containing those classes 
+     * Java classes containing Swagger's annotation <code>@Api</code>, or Java packages containing those classes
      * can be configured here, use ; as the delimiter if you have more than one location.
      */
     @Parameter(required = true)
     private String locations;
-    
+
     @Parameter(name = "apiInfo", required = false)
     private ApiSourceInfo apiInfo;
 
     /**
-     * The version of your APIs 
+     * The version of your APIs
      */
     @Parameter(required = true)
     private String apiVersion;
 
     /**
-     * The basePath of your APIs. 
+     * The basePath of your APIs.
      */
     @Parameter(required = true)
     private String basePath;
 
-    /**
-     * <code>outputTemplate</code> is the path of a mustache template file, 
-     * see more details in next section. 
-     * If you don't want to generate extra api documents, just don't set it.
-     */
-    @Parameter(required = false)
-    private String outputTemplate;
-
     @Parameter
-    private String outputPath;
-
-    @Parameter
-    private String swaggerDirectory;
-
-    @Parameter
-    public String mustacheFileRoot;
-
-    @Parameter
-    public boolean useOutputFlatStructure = true;
-
-    @Parameter
-    private String swaggerUIDocBasePath;
+    private String outputFolder;
 
     @Parameter
     private String overridingModels;
 
-    @Parameter
-    private String apiSortComparator;
 
     /**
      * Information about swagger filter that will be used for prefiltering
@@ -73,30 +56,30 @@ public class ApiSource {
     @Parameter
     private String swaggerInternalFilter;
 
-	@Parameter
-	private String swaggerApiReader;
-	
-	@Parameter
-	private String swaggerDocumentSource;
-    
+    @Parameter
+    private String swaggerApiReader;
+
+    @Parameter
+    private String swaggerDocumentSource;
+
     @Parameter
     private boolean supportSpringMvc;
 
     public Set<Class> getValidClasses() throws GenerateException {
-        Set<Class> classes = new HashSet<Class>();
-        if (getLocations() == null) {
-            Set<Class<?>> c = new Reflections("").getTypesAnnotatedWith(Api.class);
-            classes.addAll(c);
-        } else {
-            if (locations.contains(";")) {
-                String[] sources = locations.split(";");
-                for (String source : sources) {
-                    Set<Class<?>> c = new Reflections(source).getTypesAnnotatedWith(Api.class);
-                    classes.addAll(c);
-                }
-            } else {
-                classes.addAll(new Reflections(locations).getTypesAnnotatedWith(Api.class));
+        Set<Class> classes = new HashSet<>();
+        if (locations == null) {
+            locations = "";
+        }
+        if (locations.contains(";")) {
+            for (String singleLocation : locations.split(";")) {
+                Reflections reflections = new Reflections(singleLocation);
+                classes.addAll(reflections.getTypesAnnotatedWith(RestController.class));
+                classes.addAll(reflections.getTypesAnnotatedWith(Api.class));
             }
+        } else {
+            Reflections reflections = new Reflections(locations);
+            classes.addAll(reflections.getTypesAnnotatedWith(RestController.class));
+            classes.addAll(reflections.getTypesAnnotatedWith(Api.class));
         }
         Iterator<Class> it = classes.iterator();
         while (it.hasNext()) {
@@ -123,14 +106,6 @@ public class ApiSource {
         this.locations = locations;
     }
 
-    public String getOutputTemplate() {
-        return outputTemplate;
-    }
-
-    public void setOutputTemplate(String outputTemplate) {
-        this.outputTemplate = outputTemplate;
-    }
-
     public String getMustacheFileRoot() {
         return mustacheFileRoot;
     }
@@ -147,12 +122,12 @@ public class ApiSource {
         this.useOutputFlatStructure = useOutputFlatStructure;
     }
 
-    public String getOutputPath() {
-        return outputPath;
+    public String getOutputFolder() {
+        return outputFolder;
     }
 
-    public void setOutputPath(String outputPath) {
-        this.outputPath = outputPath;
+    public void setOutputFolder(String outputFolder) {
+        this.outputFolder = outputFolder;
     }
 
     public String getApiVersion() {
@@ -171,22 +146,6 @@ public class ApiSource {
         this.basePath = basePath;
     }
 
-    public String getSwaggerDirectory() {
-        return swaggerDirectory;
-    }
-
-    public void setSwaggerDirectory(String swaggerDirectory) {
-        this.swaggerDirectory = swaggerDirectory;
-    }
-
-    public void setSwaggerUIDocBasePath(String swaggerUIDocBasePath) {
-        this.swaggerUIDocBasePath = swaggerUIDocBasePath;
-    }
-
-    public String getSwaggerUIDocBasePath() {
-        return swaggerUIDocBasePath;
-    }
-
     public String getOverridingModels() {
         return overridingModels;
     }
@@ -203,29 +162,21 @@ public class ApiSource {
         this.swaggerInternalFilter = swaggerInternalFilter;
     }
 
-	public String getSwaggerApiReader() {
-		return swaggerApiReader;
-	}
+    public String getSwaggerApiReader() {
+        return swaggerApiReader;
+    }
 
-	public void setSwaggerApiReader(String swaggerApiReader) {
-		this.swaggerApiReader = swaggerApiReader;
-	}
+    public void setSwaggerApiReader(String swaggerApiReader) {
+        this.swaggerApiReader = swaggerApiReader;
+    }
 
-  public String getApiSortComparator() {
-    return apiSortComparator;
-  }
+    public String getSwaggerDocumentSource() {
+        return swaggerDocumentSource;
+    }
 
-  public void setApiSortComparator(String apiSortComparator) {
-    this.apiSortComparator = apiSortComparator;
-  }
-
-  public String getSwaggerDocumentSource() {
-    return swaggerDocumentSource;
-  }
-
-  public void setSwaggerDocumentSource(String swaggerDocumentSource) {
-    this.swaggerDocumentSource = swaggerDocumentSource;
-  }
+    public void setSwaggerDocumentSource(String swaggerDocumentSource) {
+        this.swaggerDocumentSource = swaggerDocumentSource;
+    }
 
     public boolean isSupportSpringMvc() {
         return supportSpringMvc;

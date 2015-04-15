@@ -1,21 +1,22 @@
 package com.github.kongchen.swagger.docgen.mustache;
 
 
+import java.util.List;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.kongchen.swagger.docgen.StringTypeHolder;
+import com.github.kongchen.swagger.docgen.TypeUtils;
 import com.github.kongchen.swagger.docgen.util.Utils;
 import com.wordnik.swagger.model.Parameter;
 
-import static com.github.kongchen.swagger.docgen.TypeUtils.getTrueType;
-
 public class MustacheParameter {
+
     private final String allowableValue;
 
     private final String access;
 
     private final String defaultValue;
-
-    private String name;
 
     private final boolean required;
 
@@ -23,11 +24,10 @@ public class MustacheParameter {
 
     private final String type;
 
-    private final String linkType;
+    private String name;
 
     public MustacheParameter(Parameter para) {
         this.name = para.name();
-        this.linkType = getTrueType(para.dataType());
         this.required = para.required();
         this.description = Utils.getStrInOption(para.description());
         this.type = para.dataType();
@@ -48,6 +48,10 @@ public class MustacheParameter {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public boolean isRequired() {
         return required;
     }
@@ -60,26 +64,31 @@ public class MustacheParameter {
         return type;
     }
 
-    public String getLinkType() {
-        return linkType;
-    }
-
     public String getAccess() {
         return access;
+    }
+
+    public String getRowType() {
+        String rowType = TypeUtils.parseClassNamesFromGenericString(type).getTypeName();
+        return TypeUtils.prepareClassNameForTemplate(rowType);
+    }
+
+    public List<StringTypeHolder> getGenerics() {
+        return TypeUtils.parseClassNamesFromGenericString(type).getGenerics();
+    }
+
+    public boolean getHasGenerics() {
+        return !TypeUtils.parseClassNamesFromGenericString(type).getGenerics().isEmpty();
     }
 
     @Override
     public String toString() {
         ObjectMapper om = new ObjectMapper();
         try {
-           return  om.writerWithDefaultPrettyPrinter().writeValueAsString(this);
+            return om.writerWithDefaultPrettyPrinter().writeValueAsString(this);
         } catch (JsonProcessingException e) {
             return null;
         }
 
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }

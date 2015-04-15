@@ -9,7 +9,7 @@ import com.wordnik.swagger.model.AllowableListValues;
 /**
  * Created by chekong on 10/11/14.
  */
-public class JAllowableListValues  extends JAllowableValues{
+public class JAllowableListValues extends JAllowableValues {
     private List<String> values;
     private String valueType;
 

@@ -1,13 +1,12 @@
 package com.github.kongchen.swagger.docgen.remote.model;
 
-import com.github.kongchen.swagger.docgen.remote.ListConverter;
-import com.wordnik.swagger.model.*;
+import com.wordnik.swagger.model.AuthorizationType;
 
 /**
  * Created by chekong on 10/11/14.
  */
 public class JAuthorizationType implements CanBeSwaggerModel<AuthorizationType> {
-    
+
     private JOAuth oauth2;
     private JApiKey apiKey;
 
@@ -32,7 +31,7 @@ public class JAuthorizationType implements CanBeSwaggerModel<AuthorizationType> 
         if (oauth2 != null) {
             return oauth2.toSwaggerModel();
         }
-        if (apiKey != null ) {
+        if (apiKey != null) {
             return apiKey.toSwaggerModel();
         }
 

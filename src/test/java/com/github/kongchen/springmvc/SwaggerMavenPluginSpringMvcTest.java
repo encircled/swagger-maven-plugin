@@ -1,7 +1,21 @@
 package com.github.kongchen.springmvc;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.kongchen.springmvc.controller.PetController;
+import com.github.kongchen.swagger.docgen.StringTypeHolder;
+import com.github.kongchen.swagger.docgen.TypeUtils;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiDocumentMojo;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
 import org.apache.commons.io.FileUtils;
@@ -14,14 +28,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 /**
  * @author chekong
  */
@@ -31,7 +37,6 @@ public class SwaggerMavenPluginSpringMvcTest extends AbstractMojoTestCase {
     private final File swaggerOutputDir = new File(getBasedir(), "generated/swagger-ui-springmvc");
     private final File docOutput = new File(getBasedir(), "generated/document-springmvc.html");
     private ApiDocumentMojo mojo;
-
 
     @BeforeMethod
     protected void setUp() throws Exception {
@@ -135,7 +140,6 @@ public class SwaggerMavenPluginSpringMvcTest extends AbstractMojoTestCase {
     public void testSwaggerOutputFlatWithoutSwaggerUiPath() throws Exception {
         List<ApiSource> apisources = (List<ApiSource>) getVariableValueFromObject(mojo, "apiSources");
         apisources.get(0).setUseOutputFlatStructure(true);
-        apisources.get(0).setSwaggerUIDocBasePath(null);
         setVariableValueToObject(mojo, "apiSources", apisources);
         mojo.execute();
 
@@ -167,35 +171,15 @@ public class SwaggerMavenPluginSpringMvcTest extends AbstractMojoTestCase {
     }
 
     @Test
-    public void testNullSwaggerOutput() throws Exception {
-        List<ApiSource> apisources = (List<ApiSource>) getVariableValueFromObject(mojo, "apiSources");
-        apisources.get(0).setSwaggerDirectory(null);
-        setVariableValueToObject(mojo, "apiSources", apisources);
-        mojo.execute();
-        Assert.assertFalse(swaggerOutputDir.exists());
-
-    }
-
-    @Test
-    public void testNullMustacheOutput() throws Exception {
-        List<ApiSource> apisources = (List<ApiSource>) getVariableValueFromObject(mojo, "apiSources");
-        apisources.get(0).setOutputTemplate(null);
-        setVariableValueToObject(mojo, "apiSources", apisources);
-        mojo.execute();
-        Assert.assertFalse(docOutput.exists());
-
-    }
-
-    @Test
     public void testOverrideModels() throws MojoFailureException, MojoExecutionException, IOException {
         mojo.execute();
         File carfile = new File(swaggerOutputDir, "car.json");
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode tree = objectMapper.readTree(carfile);
         Assert.assertEquals("Date in ISO-8601 format",
-                            tree.get("models").get("DateTime").get("properties")
-                                .get("value").get("description").asText());
-        
+                tree.get("models").get("DateTime").get("properties")
+                        .get("value").get("description").asText());
+
     }
 
     @DataProvider
@@ -203,12 +187,12 @@ public class SwaggerMavenPluginSpringMvcTest extends AbstractMojoTestCase {
         String tempDirPath = createTempDirPath();
 
         List<String[]> dataToBeReturned = new ArrayList<String[]>();
-        dataToBeReturned.add(new String[]{tempDirPath + "foo" + File.separator + "bar" + File
-            .separator + "test.html"});
-        dataToBeReturned.add(new String[]{tempDirPath + File.separator + "bar" + File.separator +
-                                              "test.html"});
-        dataToBeReturned.add(new String[]{tempDirPath + File.separator + "test.html"});
-        dataToBeReturned.add(new String[]{"test.html"});
+        dataToBeReturned.add(new String[]{ tempDirPath + "foo" + File.separator + "bar" + File
+                .separator + "test.html" });
+        dataToBeReturned.add(new String[]{ tempDirPath + File.separator + "bar" + File.separator +
+                "test.html" });
+        dataToBeReturned.add(new String[]{ tempDirPath + File.separator + "test.html" });
+        dataToBeReturned.add(new String[]{ "test.html" });
 
         return dataToBeReturned.iterator();
     }
@@ -216,7 +200,7 @@ public class SwaggerMavenPluginSpringMvcTest extends AbstractMojoTestCase {
     @Test(dataProvider = "pathProvider", enabled = false)
     public void testExecuteDirectoryCreated(String path) throws Exception {
 
-        mojo.getApiSources().get(0).setOutputPath(path);
+        mojo.getApiSources().get(0).setOutputFolder(path);
 
         File file = new File(path);
         mojo.execute();
@@ -224,6 +208,90 @@ public class SwaggerMavenPluginSpringMvcTest extends AbstractMojoTestCase {
         if (file.getParentFile() != null) {
             FileUtils.deleteDirectory(file.getParentFile());
         }
+    }
+
+    @Test
+    public void testTest() throws Exception {
+        Class<?> clazz = PetController.class;
+        Method m1 = clazz.getMethod("test");
+        Method m2 = clazz.getMethod("test2");
+        Method m3 = clazz.getMethod("test3");
+        Method m4 = clazz.getMethod("test4");
+        Method m5 = clazz.getMethod("test5");
+        Method m6 = clazz.getMethod("test6");
+        Method m7 = clazz.getMethod("test7");
+        Method m8 = clazz.getMethod("test8");
+        Method m9 = clazz.getMethod("test9");
+        Method testMapMethod = clazz.getMethod("testMap", Map.class);
+
+        TypeUtils.TypeHolder m1tree = TypeUtils.getFullTypesTree(clazz, m1.getGenericReturnType());
+        TypeUtils.TypeHolder m2tree = TypeUtils.getFullTypesTree(clazz, m2.getGenericReturnType());
+        TypeUtils.TypeHolder m3tree = TypeUtils.getFullTypesTree(clazz, m3.getGenericReturnType());
+        TypeUtils.TypeHolder m4tree = TypeUtils.getFullTypesTree(clazz, m4.getGenericReturnType());
+        TypeUtils.TypeHolder m5tree = TypeUtils.getFullTypesTree(clazz, m5.getGenericReturnType());
+        TypeUtils.TypeHolder m6tree = TypeUtils.getFullTypesTree(clazz, m6.getGenericReturnType());
+        TypeUtils.TypeHolder m7tree = TypeUtils.getFullTypesTree(clazz, m7.getGenericReturnType());
+        TypeUtils.TypeHolder m8tree = TypeUtils.getFullTypesTree(clazz, m8.getGenericReturnType());
+        TypeUtils.TypeHolder m9tree = TypeUtils.getFullTypesTree(clazz, m9.getGenericReturnType());
+        TypeUtils.TypeHolder testMapMethod9tree = TypeUtils.getFullTypesTree(clazz, testMapMethod.getGenericReturnType());
+
+        System.out.println(m1tree);
+        System.out.println(m2tree);
+        System.out.println(m3tree);
+        System.out.println(m4tree);
+        System.out.println(m5tree);
+        System.out.println(m6tree);
+        System.out.println(m7tree);
+        System.out.println(m8tree);
+        System.out.println(m9tree);
+        System.out.println(testMapMethod9tree);
+        System.out.println("-------------");
+
+        Assert.assertEquals(m1tree.toString(), "List<Pet>");
+        Assert.assertEquals(m2tree.toString(), "List<Number>");
+        Assert.assertEquals(m3tree.toString(), "Long");
+        Assert.assertEquals(m4tree.toString(), "Long");
+        Assert.assertEquals(m5tree.toString(), "void");
+        Assert.assertEquals(m6tree.toString(), "List<Set<Number>>");
+        Assert.assertEquals(m7tree.toString(), "List<Collection<Number>>");
+        Assert.assertEquals(m8tree.toString(), "List<Pet>");
+        Assert.assertEquals(m9tree.toString(), "Set<List<Pet>>");
+        Assert.assertEquals(testMapMethod9tree.toString(), "Map<User,List<DateTime>>");
+
+        Assert.assertTrue(m7tree.collectAllClasses().contains(List.class));
+        Assert.assertTrue(m7tree.collectAllClasses().contains(Collection.class));
+        Assert.assertTrue(m7tree.collectAllClasses().contains(Number.class));
+    }
+
+    @Test
+    public void testParseStringTypeHolder() {
+        StringTypeHolder typeHolder = TypeUtils.parseClassNamesFromGenericString("Request<Map<String,List<User>>>");
+        Assert.assertEquals("Request", typeHolder.getTypeName());
+
+        List<StringTypeHolder> generics = typeHolder.getGenerics();
+
+        Assert.assertEquals(1, generics.size());
+        Assert.assertEquals(2, generics.get(0).getGenerics().size()); // map
+        Assert.assertEquals("String", generics.get(0).getGenerics().get(0).getTypeName()); // maps key (String)
+        Assert.assertEquals("List", generics.get(0).getGenerics().get(1).getTypeName()); // maps value (List)
+        Assert.assertEquals(0, generics.get(0).getGenerics().get(0).getGenerics().size()); // string has no generics
+        Assert.assertEquals(1, generics.get(0).getGenerics().get(1).getGenerics().size()); // lists generics (User)
+        Assert.assertEquals("User", generics.get(0).getGenerics().get(1).getGenerics().get(0).getTypeName()); // lists generics (User)
+    }
+
+    @Test
+    public void testComplexParseStringTypeHolder() {
+        StringTypeHolder complexTypeHolder = TypeUtils.parseClassNamesFromGenericString("Map<List<Long>, Map<String, List<Set<String>>>>");
+        List<String> allTypes = complexTypeHolder.collectAllTypes();
+        Assert.assertEquals(8, allTypes.size());
+        Assert.assertEquals("Map", allTypes.get(0));
+        Assert.assertEquals("List", allTypes.get(1));
+        Assert.assertEquals("Long", allTypes.get(2));
+        Assert.assertEquals("Map", allTypes.get(3));
+        Assert.assertEquals("String", allTypes.get(4));
+        Assert.assertEquals("List", allTypes.get(5));
+        Assert.assertEquals("Set", allTypes.get(6));
+        Assert.assertEquals("String", allTypes.get(7));
     }
 
     private String createTempDirPath() throws Exception {

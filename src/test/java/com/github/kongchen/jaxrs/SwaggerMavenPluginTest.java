@@ -1,5 +1,13 @@
 package com.github.kongchen.jaxrs;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiDocumentMojo;
@@ -13,14 +21,6 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * @author chekong
@@ -51,24 +51,6 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
         mojo.execute();
 
         final InputStream resource = getClass().getResourceAsStream("/sample.html");
-        final List<String> expect = IOUtils.readLines(resource);
-        final List<String> testOutput = FileUtils.readLines(docOutput);
-
-        Assert.assertEquals(expect.size(), testOutput.size());
-        for (int i = 0; i < expect.size(); i++) {
-            Assert.assertEquals(expect.get(i), testOutput.get(i));
-        }
-    }
-
-    @Test
-    public void testSortApis() throws Exception {
-        final List<ApiSource> apisources = (List<ApiSource>) getVariableValueFromObject(mojo, "apiSources");
-        apisources.get(0).setApiSortComparator("com.github.kongchen.jaxrs.ApiComparator");
-        setVariableValueToObject(mojo, "apiSources", apisources);
-
-        mojo.execute();
-
-        final InputStream resource = getClass().getResourceAsStream("/sorted-sample.html");
         final List<String> expect = IOUtils.readLines(resource);
         final List<String> testOutput = FileUtils.readLines(docOutput);
 
@@ -152,7 +134,6 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
     public void testSwaggerOutputFlatWithoutSwaggerUiPath() throws Exception {
         List<ApiSource> apisources = (List<ApiSource>) getVariableValueFromObject(mojo, "apiSources");
         apisources.get(0).setUseOutputFlatStructure(true);
-        apisources.get(0).setSwaggerUIDocBasePath(null);
         setVariableValueToObject(mojo, "apiSources", apisources);
         mojo.execute();
 
@@ -184,35 +165,15 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
     }
 
     @Test
-    public void testNullSwaggerOutput() throws Exception {
-        List<ApiSource> apisources = (List<ApiSource>) getVariableValueFromObject(mojo, "apiSources");
-        apisources.get(0).setSwaggerDirectory(null);
-        setVariableValueToObject(mojo, "apiSources", apisources);
-        mojo.execute();
-        Assert.assertFalse(swaggerOutputDir.exists());
-
-    }
-
-    @Test
-    public void testNullMustacheOutput() throws Exception {
-        List<ApiSource> apisources = (List<ApiSource>) getVariableValueFromObject(mojo, "apiSources");
-        apisources.get(0).setOutputTemplate(null);
-        setVariableValueToObject(mojo, "apiSources", apisources);
-        mojo.execute();
-        Assert.assertFalse(docOutput.exists());
-
-    }
-
-    @Test
     public void testOverrideModels() throws MojoFailureException, MojoExecutionException, IOException {
         mojo.execute();
         File carfile = new File(swaggerOutputDir, "car.json");
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode tree = objectMapper.readTree(carfile);
         Assert.assertEquals("Content-Type in HTTP request/response header",
-                            tree.get("models").get("MediaType").get("properties")
-                                .get("value").get("description").asText());
-        
+                tree.get("models").get("MediaType").get("properties")
+                        .get("value").get("description").asText());
+
     }
 
     @DataProvider
@@ -220,12 +181,12 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
         String tempDirPath = createTempDirPath();
 
         List<String[]> dataToBeReturned = new ArrayList<String[]>();
-        dataToBeReturned.add(new String[]{tempDirPath + "foo" + File.separator + "bar" + File
-            .separator + "test.html"});
-        dataToBeReturned.add(new String[]{tempDirPath + File.separator + "bar" + File.separator +
-                                              "test.html"});
-        dataToBeReturned.add(new String[]{tempDirPath + File.separator + "test.html"});
-        dataToBeReturned.add(new String[]{"test.html"});
+        dataToBeReturned.add(new String[]{ tempDirPath + "foo" + File.separator + "bar" + File
+                .separator + "test.html" });
+        dataToBeReturned.add(new String[]{ tempDirPath + File.separator + "bar" + File.separator +
+                "test.html" });
+        dataToBeReturned.add(new String[]{ tempDirPath + File.separator + "test.html" });
+        dataToBeReturned.add(new String[]{ "test.html" });
 
         return dataToBeReturned.iterator();
     }
@@ -233,7 +194,7 @@ public class SwaggerMavenPluginTest extends AbstractMojoTestCase {
     @Test(dataProvider = "pathProvider")
     public void testExecuteDirectoryCreated(String path) throws Exception {
 
-        mojo.getApiSources().get(0).setOutputPath(path);
+        mojo.getApiSources().get(0).setOutputFolder(path);
 
         File file = new File(path);
         mojo.execute();

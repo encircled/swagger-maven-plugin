@@ -1,8 +1,8 @@
 package com.github.kongchen.model;
 
-import com.wordnik.swagger.annotations.ApiModelProperty;
-
 import javax.xml.bind.annotation.XmlElement;
+
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 public class Email implements Entity<Integer> {
     private String email;

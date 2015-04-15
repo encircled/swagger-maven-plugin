@@ -1,5 +1,9 @@
 package com.github.kongchen.swagger.docgen.remote.model;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.github.kongchen.swagger.docgen.remote.ListConverter;
 import com.github.kongchen.swagger.docgen.util.Utils;
 import com.wordnik.swagger.model.ApiDescription;
@@ -7,18 +11,12 @@ import com.wordnik.swagger.model.ApiListing;
 import com.wordnik.swagger.model.Authorization;
 import com.wordnik.swagger.model.Model;
 import scala.Option;
-import scala.Predef;
-import scala.collection.JavaConversions;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 
 /**
  * Created by chekong on 10/11/14.
  */
-public class JApiListing implements CanBeSwaggerModel<ApiListing>{
+public class JApiListing implements CanBeSwaggerModel<ApiListing> {
     private String apiVersion;
     private String swaggerVersion;
     private String basePath;
@@ -133,7 +131,7 @@ public class JApiListing implements CanBeSwaggerModel<ApiListing>{
         JApiListing doc = this;
 
         HashMap<String, Model> _models = new HashMap<String, Model>();
-        for (String key: doc.getModels().keySet()) {
+        for (String key : doc.getModels().keySet()) {
             _models.put(key, doc.getModels().get(key).toSwaggerModel());
         }
 

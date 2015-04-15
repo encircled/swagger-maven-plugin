@@ -1,0 +1,337 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>{{#apiInfo}}{{title}}{{/apiInfo}}</title>
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+    <style type="text/css">
+        .op_notes {
+            float: right;
+            padding: 6px;
+        }
+
+        #main_container {
+            margin: 0 auto;
+            width: 958px;
+        }
+
+        .btn.btn-GET {
+            color: #fff;
+            background-color: #337ab7;
+            border-color: #2e6da4;
+        }
+
+        .btn-GET:hover {
+            color: #fff;
+            background-color: #286090;
+            border-color: #204d74;
+        }
+
+        .btn-POST {
+            color: #fff;
+            background-color: #5cb85c;
+            border-color: #4cae4c;
+        }
+
+        .btn-POST:hover {
+            color: #fff;
+            background-color: #449d44;
+            border-color: #398439;
+        }
+
+        .btn-DELETE {
+            color: #fff;
+            background-color: #d9534f;
+            border-color: #d43f3a;
+        }
+
+        .btn-DELETE:hover {
+            color: #fff;
+            background-color: #c9302c;
+            border-color: #ac2925;
+        }
+
+        .btn-PUT {
+            color: #fff;
+            background-color: #f0ad4e;
+            border-color: #eea236;
+        }
+
+        .btn-PUT:hover {
+            color: #fff;
+            background-color: #ec971f;
+            border-color: #d58512;
+        }
+
+        .method-link {
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+<div id="main_container">
+    {{#apiInfo}}
+        <h1>{{title}}</h1>
+
+        <h3>BasePath: {{basePath}}</h3>
+
+        <h3>{{description}}</h3>
+
+        <h3>Terms of Service: <a href="{{termsOfServiceUrl}}">{{termsOfServiceUrl}}</a></h3>
+
+        <h3>Contact: <a href="mailto:{{contact}}">{{contact}}</a></h3>
+
+        <h3>License: <a href="{{licenseUrl}}">{{license}}</a></h3>
+    {{/apiInfo}}
+    <h3> Api Version: {{apiVersion}}</h3>
+
+    <div id="api_container">
+        <h3>Resources</h3>
+        {{#apiDocuments}}
+            <br/>
+
+            <h3>{{resourcePath}}</h3>
+
+            <div class='content'>
+                {{{description}}}
+
+                <div id="accordion{{index}}api" role="tablist" aria-multiselectable="true" class="panel-group">
+                    {{#apis}}
+                        {{#operations}}
+
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="heading{{index}}{{apiIndex}}{{opIndex}}">
+                                    <h4 class="panel-title">
+                                        <button data-toggle="collapse" data-target="#collapse{{index}}{{apiIndex}}{{opIndex}}"
+                                                aria-controls="collapse{{index}}{{apiIndex}}{{opIndex}}"
+                                                class="btn btn-{{httpMethod}}">{{httpMethod}}</button>
+                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{index}}{{apiIndex}}{{opIndex}}"
+                                           aria-expanded="false"
+                                           aria-controls="collapse{{index}}{{apiIndex}}{{opIndex}}">
+                                            <span style="margin-left: 5px;font-weight: bold">{{{path}}}</span>
+                                            <span class="op_notes label label-default">{{{summary}}}</span>
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div id="collapse{{index}}{{apiIndex}}{{opIndex}}" class="panel-collapse collapse" role="tabpanel"
+                                     aria-labelledby="headingOne">
+                                    <div class="panel-body">
+                                        <p>{{notes}}</p>
+
+                                        <div id="tabs{{index}}{{apiIndex}}{{opIndex}}" class="tabpanel">
+                                            <ul class="nav nav-tabs" role="tablist">
+                                                <li role="presentation" class="active">
+                                                    <a role="tab" data-toggle="tab" href="#tabs{{index}}{{apiIndex}}{{opIndex}}-1">
+                                                        Request Parameters
+                                                    </a>
+                                                </li>
+                                                <li role="presentation">
+                                                    <a role="tab" data-toggle="tab" href="#tabs{{index}}{{apiIndex}}{{opIndex}}-2">
+                                                        Response Body
+                                                    </a>
+                                                </li>
+                                                <li role="presentation">
+                                                    <a role="tab" data-toggle="tab" href="#tabs{{index}}{{apiIndex}}{{opIndex}}-3">
+                                                        Response Status Codes
+                                                    </a>
+                                                </li>
+                                                <li role="presentation">
+                                                    <a role="tab" data-toggle="tab" href="#tabs{{index}}{{apiIndex}}{{opIndex}}-4">
+                                                        Examples
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                            <div class="tab-content panel-body">
+                                                <div id="tabs{{index}}{{apiIndex}}{{opIndex}}-1" class="tab-pane active" role="tabpanel">
+                                                    <ul>
+                                                        {{#parameters}}
+                                                            <li>
+                                                                <h4>{{paramType}}</h4>
+                                                                <table class="table table-hover table-bordered">
+                                                                    <thead>
+                                                                    <tr>
+                                                                        <th>Name</th>
+                                                                        <th>Required</th>
+                                                                        <th>Data Type</th>
+                                                                        <th>Description</th>
+                                                                    </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                    {{#paras}}
+                                                                        <tr>
+                                                                            <th>{{name}}</th>
+                                                                            <td>{{#required}}required{{/required}}
+                                                                                {{^required}}optional{{/required}}</td>
+                                                                            <td>
+                                                                                <a class="method-link" href="#{{rowType}}">
+                                                                                    {{rowType}}
+                                                                                </a>
+                                                                                {{#hasGenerics}}
+                                                                                    [
+                                                                                    {{#generics}}
+                                                                                        <a href="#{{typeName}}">
+                                                                                            {{typeName}}
+                                                                                        </a>
+                                                                                        {{#hasGenerics}}
+                                                                                            [
+                                                                                            {{#generics}}
+                                                                                                <a href="#{{typeName}}">
+                                                                                                    {{typeName}}
+                                                                                                </a>
+                                                                                                {{^isLast}}
+                                                                                                    ,
+                                                                                                {{/isLast}}
+                                                                                            {{/generics}}
+                                                                                            ]
+                                                                                        {{/hasGenerics}}
+                                                                                        {{^isLast}}
+                                                                                            ,
+                                                                                        {{/isLast}}
+                                                                                    {{/generics}}
+                                                                                    ]
+                                                                                {{/hasGenerics}}
+                                                                            </td>
+                                                                            <td>{{description}}</td>
+                                                                        </tr>
+                                                                    {{/paras}}
+                                                                    </tbody>
+                                                                </table>
+                                                            </li>
+                                                        {{/parameters}}
+                                                        {{^parameters}}
+                                                            No parameters
+                                                        {{/parameters}}
+                                                    </ul>
+                                                </div>
+                                                <div id="tabs{{index}}{{apiIndex}}{{opIndex}}-2" class="tab-pane" role="tabpanel">
+                                                    <p>
+                                                        {{#responseClass}}
+                                                            <a class="method-link" role="button"
+                                                               href="#{{typeName}}">{{typeName}}</a>
+                                                            {{#hasGenerics}}
+                                                                [
+                                                                {{#generics}}
+                                                                    <a class="method-link" role="button"
+                                                                       href="#{{typeName}}">{{typeName}}</a>
+                                                                    {{#hasGenerics}}
+                                                                    [
+                                                                    {{#generics}}
+                                                                        <a class="method-link" role="button"
+                                                                           href="#{{typeName}}">{{typeName}}</a>
+                                                                        {{^isLast}}
+                                                                            ,
+                                                                        {{/isLast}}
+                                                                    {{/generics}}
+                                                                    ]
+                                                                    {{/hasGenerics}}
+                                                                    {{^isLast}}
+                                                                        ,
+                                                                    {{/isLast}}
+                                                                {{/generics}}
+                                                                ]
+                                                            {{/hasGenerics}}
+                                                        {{/responseClass}}
+                                                        {{^responseClass}}
+                                                            No Content
+                                                        {{/responseClass}}
+                                                    </p>
+                                                </div>
+                                                <div id="tabs{{index}}{{apiIndex}}{{opIndex}}-3" class="tab-pane" role="tabpanel">
+                                                    <table class="table table-bordered table-hover">
+                                                        <thead>
+                                                        <tr>
+                                                            <th>Status Code</th>
+                                                            <th>Reason</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        {{#errorResponses}}
+                                                            <tr>
+                                                                <td>{{code}}</td>
+                                                                <td>{{{message}}}</td>
+                                                            </tr>
+                                                        {{/errorResponses}}
+                                                        {{^errorResponses}}
+                                                            Statuses not specified
+                                                        {{/errorResponses}}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div id="tabs{{index}}{{apiIndex}}{{opIndex}}-4" class="tab-pane" role="tabpanel">
+                                                <p>{{#samples}}
+                                                    Sample Request
+
+                                                    <pre>
+                                                        {{{sampleRequest}}}
+                                                    </pre>
+
+                                                    - Sample Response
+
+                                                <pre>
+                                                    {{{sampleResponse}}}
+                                                </pre>
+                                                {{/samples}}
+                                                    {{^samples}}No Samples{{/samples}}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        {{/operations}}
+                    {{/apis}}
+                </div>
+            </div>
+        {{/apiDocuments}}
+    </div>
+    <h2>Data Types</h2>
+    {{#dataTypes}}
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <h3><a id="{{name}}">{{name}}</a></h3>
+
+                <div>
+                    <table class="table table-striped table-hover table-bordered">
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Required</th>
+                        <th>Access</th>
+                        <th>Schema</th>
+                        <th>Notes</th>
+                        {{#items}}
+                            <tr>
+                                <th>{{name}}</th>
+                                <td>
+                                    {{#linkType}}
+                                        <a href="#{{{linkType}}}">
+                                            {{type}}
+                                        </a>
+                                    {{/linkType}}
+                                    {{^linkType}}{{type}}{{/linkType}}
+                                </td>
+                                <td>{{required}}</td>
+                                <td>{{access}}</td>
+                                <td>{{{description}}}</td>
+                                <td>{{{notes}}}</td>
+                            </tr>
+                        {{/items}}
+                    </table>
+                </div>
+            </div>
+        </div>
+    {{/dataTypes}}
+</div>
+</body>
+</html>

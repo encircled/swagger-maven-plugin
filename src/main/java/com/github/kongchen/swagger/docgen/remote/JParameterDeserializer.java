@@ -48,9 +48,9 @@ public class JParameterDeserializer extends JsonDeserializer<JParameter> {
 
             if ("array".equalsIgnoreCase(type)) {
                 if (Utils.getBooleanFromJsonNode(node, "uniqueItems")) {
-                    parameter.setDataType("Set["+items.getRef()+"]");
+                    parameter.setDataType("Set[" + items.getRef() + "]");
                 } else {
-                    parameter.setDataType("List["+items.getRef()+"]");
+                    parameter.setDataType("List[" + items.getRef() + "]");
                 }
             }
         }

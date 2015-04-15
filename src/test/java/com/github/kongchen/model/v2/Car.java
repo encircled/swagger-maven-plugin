@@ -1,8 +1,8 @@
 package com.github.kongchen.model.v2;
 
-import com.wordnik.swagger.annotations.ApiModelProperty;
-
 import javax.xml.bind.annotation.XmlRootElement;
+
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /**
  * Created with IntelliJ IDEA.

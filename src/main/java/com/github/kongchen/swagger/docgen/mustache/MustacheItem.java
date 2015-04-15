@@ -24,14 +24,12 @@ public class MustacheItem {
     private int position;
 
     public MustacheItem(String name, ModelProperty documentationSchema) {
-
         this.name = name;
-        this.type = documentationSchema.type();
-        this.linkType = this.type;
+        this.type = TypeUtils.prepareClassNameForTemplate(documentationSchema.type());
         this.description = Utils.getStrInOption(documentationSchema.description());
         this.required = documentationSchema.required();
         this.notes = Utils.getStrInOption(documentationSchema.description());
-        this.linkType = TypeUtils.filterBasicTypes(this.linkType);
+        this.linkType = TypeUtils.filterBasicTypes(this.type);
         this.allowableValue = Utils.allowableValuesToString(documentationSchema.allowableValues());
         this.position = documentationSchema.position();
     }

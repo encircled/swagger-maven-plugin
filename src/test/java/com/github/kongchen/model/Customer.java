@@ -1,16 +1,17 @@
 package com.github.kongchen.model;
 
-import com.wordnik.swagger.annotations.ApiModelProperty;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
-import java.util.List;
+
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /**
  * Created with IntelliJ IDEA.
  * User: kongchen
  * Date: 6/4/13
  */
-public class Customer implements Entity<Integer>{
+public class Customer implements Entity<Integer> {
     private String name;
 
     private String surname;

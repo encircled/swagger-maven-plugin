@@ -5,7 +5,7 @@ import com.wordnik.swagger.model.TokenRequestEndpoint;
 /**
  * Created by chekong on 10/11/14.
  */
-public  class JTokenRequestEndpoint implements CanBeSwaggerModel<TokenRequestEndpoint> {
+public class JTokenRequestEndpoint implements CanBeSwaggerModel<TokenRequestEndpoint> {
     private String url;
     private String clientIdName;
     private String clientSecretName;

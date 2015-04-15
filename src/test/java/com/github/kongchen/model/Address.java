@@ -1,8 +1,8 @@
 package com.github.kongchen.model;
 
-import com.wordnik.swagger.annotations.ApiModelProperty;
-
 import javax.xml.bind.annotation.XmlElement;
+
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 public class Address implements Entity<Integer> {
     private Integer id;

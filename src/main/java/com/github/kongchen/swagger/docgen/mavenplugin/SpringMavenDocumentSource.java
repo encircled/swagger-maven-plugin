@@ -1,5 +1,16 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
@@ -21,19 +32,10 @@ import com.wordnik.swagger.model.ApiListingReference;
 import com.wordnik.swagger.model.AuthorizationType;
 import com.wordnik.swagger.model.ResourceListing;
 import org.apache.maven.plugin.logging.Log;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import scala.None;
 import scala.collection.JavaConversions;
-
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author tedleman
@@ -42,25 +44,22 @@ import java.util.Map;
  * 05/13/2013
  */
 public class SpringMavenDocumentSource extends AbstractDocumentSource {
+
     private final ApiSource apiSource;
 
     private final SpecFilter specFilter = new SpecFilter();
-
-    public OverrideConverter getOverriderConverter() {
-        return overriderConverter;
-    }
-
     private OverrideConverter overriderConverter;
 
     public SpringMavenDocumentSource(ApiSource apiSource, Log log) {
-        super(new LogAdapter(log), apiSource.getOutputPath(), apiSource.getOutputTemplate(),
-                apiSource.getSwaggerDirectory(), apiSource.mustacheFileRoot, apiSource.isUseOutputFlatStructure(),
-                apiSource.getOverridingModels(), apiSource.getApiSortComparator());
+        super(new LogAdapter(log), apiSource);
 
         setApiVersion(apiSource.getApiVersion());
-        setBasePath(apiSource.getBasePath());
         setApiInfo(apiSource.getApiInfo());
         this.apiSource = apiSource;
+    }
+
+    public OverrideConverter getOverriderConverter() {
+        return overriderConverter;
     }
 
     @Override
@@ -96,25 +95,27 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
 
     @Override
     public void loadDocuments() throws GenerateException {
-        Map<String, SpringResource> resourceMap = new HashMap<String, SpringResource>();
+        Map<String, SpringResource> resourceMap = new HashMap<>();
         SwaggerConfig swaggerConfig = new SwaggerConfig();
         swaggerConfig.setApiVersion(apiSource.getApiVersion());
         swaggerConfig.setSwaggerVersion(SwaggerSpec.version());
         swaggerConfig.setApiInfo(toSwaggerApiInfo(apiSource.getApiInfo())); //TODO: can we pull this from spring?
-        List<ApiListingReference> apiListingReferences = new ArrayList<ApiListingReference>();
-        List<AuthorizationType> authorizationTypes = new ArrayList<AuthorizationType>();
+        List<ApiListingReference> apiListingReferences = new ArrayList<>();
+        List<AuthorizationType> authorizationTypes = new ArrayList<>();
 
         //relate all methods to one base request mapping if multiple controllers exist for that mapping
         //get all methods from each controller & find their request mapping
         //create map - resource string (after first slash) as key, new SpringResource as value
-        for (Class<?> c : apiSource.getValidClasses()) {
-            RequestMapping requestMapping = c.getAnnotation(RequestMapping.class);
+        Set<Class> validClasses = apiSource.getValidClasses();
+        LOG.info("SpringSwagger: found " + validClasses.size() + " rest controller classes.");
+        for (Class<?> c : validClasses) {
+            RequestMapping requestMapping = AnnotationUtils.findAnnotation(c, RequestMapping.class);
             String description = "";
             if (c.isAnnotationPresent(Api.class)) {
                 description = c.getAnnotation(Api.class).value();
 
                 Authorization[] authorizations = c.getAnnotation(Api.class).authorizations();
-                if(authorizations != null && authorizations.length > 0) {
+                if (authorizations != null && authorizations.length > 0) {
                     List<AuthorizationType> types = AuthorizationUtils.convertToAuthorizationTypes(authorizations);
                     AuthorizationUtils.mergeAuthorizationTypes(authorizationTypes, types);
                 }
@@ -124,42 +125,36 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
                 //This occurs when a class or method loaded by reflections contains a type that has no dependency
                 try {
                     resourceMap = analyzeController(c, resourceMap, description);
-                    List<Method> mList = new ArrayList<Method>(Arrays.asList(c.getMethods()));
+                    List<Method> mList = new ArrayList<>(Arrays.asList(c.getMethods()));
                     if (c.getSuperclass() != null) {
                         mList.addAll(Arrays.asList(c.getSuperclass().getMethods()));
                     }
                     for (Method m : mList) {
-                        if (m.isAnnotationPresent(RequestMapping.class)) {
-                            RequestMapping methodReq = m.getAnnotation(RequestMapping.class);
+                        RequestMapping methodReq = AnnotationUtils.findAnnotation(m, RequestMapping.class);
+                        if (methodReq != null) {
                             //isolate resource name - attempt first by the first part of the mapping
-                            if (methodReq != null && methodReq.value().length != 0) {
-                                for (int i = 0; i < methodReq.value().length; i++) {
-                                    String resourceKey = "";
-                                    String resourceName = Utils.parseResourceName(methodReq.value()[i]);
-                                    if (!(resourceName.equals(""))) {
-                                        String version = Utils.parseVersion(requestMapping.value()[0]);
-                                        //get version - first try by class mapping, then method
-                                        if (version.equals("")) {
-                                            //class mapping failed - use method
-                                            version = Utils.parseVersion(methodReq.value()[i]);
-                                        }
-                                        resourceKey = Utils.createResourceKey(resourceName, version);
-                                        if ((!(resourceMap.containsKey(resourceKey)))) {
-                                            resourceMap.put(resourceKey, new SpringResource(c, resourceName, resourceKey, description));
-                                        }
-                                        resourceMap.get(resourceKey).addMethod(m);
+                            for (int i = 0; i < methodReq.value().length; i++) {
+                                String resourceName = Utils.parseResourceName(methodReq.value()[i]);
+                                if (!resourceName.isEmpty()) {
+                                    String version = Utils.parseVersion(requestMapping.value()[0]);
+                                    //get version - first try by class mapping, then method
+                                    if (version.equals("")) {
+                                        //class mapping failed - use method
+                                        version = Utils.parseVersion(methodReq.value()[i]);
                                     }
+                                    String resourceKey = Utils.createResourceKey(resourceName, version);
+                                    if ((!(resourceMap.containsKey(resourceKey)))) {
+                                        resourceMap.put(resourceKey, new SpringResource(c, resourceName, resourceKey, description));
+                                    }
+                                    resourceMap.get(resourceKey).addMethod(m);
                                 }
                             }
                         }
                     }
-                } catch (NoClassDefFoundError e) {
+                } catch (NoClassDefFoundError | ClassNotFoundException e) {
                     LOG.error(e.getMessage());
                     LOG.info(c.getName());
                     //exception occurs when a method type or annotation is not recognized by the plugin
-                } catch (ClassNotFoundException e) {
-                    LOG.error(e.getMessage());
-                    LOG.info(c.getName());
                 }
 
             }
@@ -170,7 +165,6 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
 
             try {
                 doc = getDocFromSpringResource(resource, swaggerConfig);
-                setBasePath(doc.basePath());
             } catch (Exception e) {
                 LOG.error("DOC NOT GENERATED FOR: " + resource.getResourceName());
                 e.printStackTrace();
@@ -186,8 +180,8 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
             @Override
             public int compare(ApiListingReference o1, ApiListingReference o2) {
                 if (o1 == null && o2 == null) return 0;
-                if (o1 == null && o2 != null) return -1;
-                if (o1 != null && o2 == null) return 1;
+                if (o1 == null) return -1;
+                if (o2 == null) return 1;
                 return o1.position() - o2.position();
             }
         });
@@ -214,15 +208,16 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
 
     //Helper method for loadDocuments()
     private Map<String, SpringResource> analyzeController(Class<?> clazz, Map<String, SpringResource> resourceMap,
-                                                          String description) throws ClassNotFoundException {
+            String description) throws ClassNotFoundException {
 
-        for (int i = 0; i < clazz.getAnnotation(RequestMapping.class).value().length; i++) {
-            String controllerMapping = clazz.getAnnotation(RequestMapping.class).value()[i];
+        RequestMapping classRequestMapping = clazz.getAnnotation(RequestMapping.class);
+        for (int i = 0; i < classRequestMapping.value().length; i++) {
+            String controllerMapping = classRequestMapping.value()[i];
             String resourceName = Utils.parseResourceName(clazz);
             for (Method m : clazz.getMethods()) {
-                if (m.isAnnotationPresent(RequestMapping.class)) {
-                    RequestMapping methodReq = m.getAnnotation(RequestMapping.class);
-                    if (methodReq.value() == null || methodReq.value().length == 0 || Utils.parseResourceName(methodReq.value()[0]).equals("")) {
+                RequestMapping methodReq = AnnotationUtils.findAnnotation(m, RequestMapping.class);
+                if (methodReq != null) {
+                    if (methodReq.value() == null || methodReq.value().length == 0 || Utils.parseResourceName(methodReq.value()[0]).isEmpty()) {
                         if (resourceName.length() != 0) {
                             String resourceKey = Utils.createResourceKey(resourceName, Utils.parseVersion(controllerMapping));
                             if ((!(resourceMap.containsKey(resourceKey)))) {
@@ -240,4 +235,5 @@ public class SpringMavenDocumentSource extends AbstractDocumentSource {
 
         return resourceMap;
     }
+
 }

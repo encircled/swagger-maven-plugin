@@ -18,12 +18,12 @@ public class JOAuth implements CanBeSwaggerModel<OAuth> {
     private List<JAuthorizationScope> scopes;
     private List<JGrantType> grantTypes;
 
-    
+
     public String getType() {
         return type;
     }
 
-    
+
     public void setType(String type) {
         this.type = type;
     }

@@ -1,5 +1,7 @@
 package com.github.kongchen.swagger.docgen.remote.model;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.kongchen.swagger.docgen.remote.ListConverter;
 import com.github.kongchen.swagger.docgen.util.Utils;
@@ -7,8 +9,6 @@ import com.wordnik.swagger.model.Authorization;
 import com.wordnik.swagger.model.Operation;
 import com.wordnik.swagger.model.Parameter;
 import com.wordnik.swagger.model.ResponseMessage;
-
-import java.util.List;
 
 
 /**
@@ -146,9 +146,9 @@ public class JOperation implements CanBeSwaggerModel<Operation> {
     @Override
     public Operation toSwaggerModel() {
         if (items != null && this.getResponseClass().equalsIgnoreCase("array")) {
-            responseClass = "List["+this.items.getRef()+"]";
+            responseClass = "List[" + this.items.getRef() + "]";
 
-        } 
+        }
         return new Operation(method, summary, notes, responseClass, nickname, position,
                 Utils.toScalaImmutableList(produces), Utils.toScalaImmutableList(consumes),
                 Utils.toScalaImmutableList(protocols),

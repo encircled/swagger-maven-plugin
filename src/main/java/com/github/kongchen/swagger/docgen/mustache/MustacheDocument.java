@@ -1,17 +1,31 @@
 package com.github.kongchen.swagger.docgen.mustache;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.kongchen.swagger.docgen.DocTemplateConstants;
+import com.github.kongchen.swagger.docgen.StringTypeHolder;
+import com.github.kongchen.swagger.docgen.TypeUtils;
 import com.github.kongchen.swagger.docgen.util.Utils;
 import com.wordnik.swagger.core.ApiValues;
 import com.wordnik.swagger.core.util.ModelUtil;
-import com.wordnik.swagger.model.*;
+import com.wordnik.swagger.model.ApiListing;
+import com.wordnik.swagger.model.Model;
+import com.wordnik.swagger.model.ModelProperty;
+import com.wordnik.swagger.model.ModelRef;
+import com.wordnik.swagger.model.Parameter;
 import scala.Option;
 import scala.collection.Iterator;
 import scala.collection.JavaConversions;
 import scala.collection.mutable.LinkedEntry;
-
-import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,30 +38,8 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
     protected static final String ARRAY = "Array";
 
     private static final String LIST = "List";
-
     @JsonIgnore
-    private final Map<String, Model> models = new HashMap<String, Model>();
-
-    private int index;
-
-    private String resourcePath;
-
-    private String description;
-
-    private List<MustacheApi> apis = new ArrayList<MustacheApi>();
-
-    private List<MustacheContentType> responseContentTypes = new ArrayList<MustacheContentType>();
-
-    private List<MustacheContentType> parameterContentTypes = new ArrayList<MustacheContentType>();
-    
-    @JsonIgnore
-    private Set<String> requestTypes = new LinkedHashSet<String>();
-
-    @JsonIgnore
-    private Set<String> responseTypes = new LinkedHashSet<String>();
-
-    @JsonIgnore
-    private static final Map<String, Integer> hashValueMap = new HashMap<String, Integer>();
+    private static final Map<String, Integer> hashValueMap = new HashMap<>();
 
     static {
         hashValueMap.put(ApiValues.TYPE_HEADER(), 1);
@@ -60,36 +52,53 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
         hashValueMap.put(DocTemplateConstants.TYPE_RESPONSE_HEADER, 8);
     }
 
+    @JsonIgnore
+    private final Map<String, Model> models = new HashMap<>();
+    private int index;
+    private String resourcePath;
+    private String description;
+    private List<MustacheApi> apis = new ArrayList<>();
+    private List<MustacheContentType> responseContentTypes = new ArrayList<>();
+    private List<MustacheContentType> parameterContentTypes = new ArrayList<>();
+    @JsonIgnore
+    private Set<String> requestTypes = new LinkedHashSet<>();
+    @JsonIgnore
+    private Set<String> responseTypes = new LinkedHashSet<>();
+
     public MustacheDocument(ApiListing apiListing) {
         if (!apiListing.models().isEmpty()) {
             models.putAll(JavaConversions.mapAsJavaMap(apiListing.models().get()));
         }
         this.resourcePath = apiListing.resourcePath();
         this.index = apiListing.position();
-        this.apis = new ArrayList<MustacheApi>(apiListing.apis().size());
+        this.apis = new ArrayList<>(apiListing.apis().size());
         this.description = Utils.getStrInOption(apiListing.description());
-        this.responseContentTypes = new ArrayList<MustacheContentType>(apiListing.produces().size());
-        this.parameterContentTypes = new ArrayList<MustacheContentType>(apiListing.consumes().size());
-    }
-
-    public void setResourcePath(String resourcePath) {
-        this.resourcePath = resourcePath;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+        this.responseContentTypes = new ArrayList<>(apiListing.produces().size());
+        this.parameterContentTypes = new ArrayList<>(apiListing.consumes().size());
     }
 
     public String getResourcePath() {
         return resourcePath;
     }
 
+    public void setResourcePath(String resourcePath) {
+        this.resourcePath = resourcePath;
+    }
+
     public String getDescription() {
         return description;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public List<MustacheApi> getApis() {
         return apis;
+    }
+
+    public void setApis(List<MustacheApi> apis) {
+        this.apis = apis;
     }
 
     public Set<String> getRequestTypes() {
@@ -104,6 +113,10 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
         return index;
     }
 
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
     public List<MustacheContentType> getResponseContentTypes() {
         return responseContentTypes;
     }
@@ -111,28 +124,19 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
     public List<MustacheContentType> getParameterContentTypes() {
         return parameterContentTypes;
     }
-    
-    public void setIndex(int index) {
-        this.index = index;
-    }
 
-    public void setApis(List<MustacheApi> apis) {
-      this.apis = apis;
-    }
-
-    public void addResponseType(MustacheResponseClass clz) {
-        if (clz.getClassName() == null) {
+    public void addResponseType(StringTypeHolder clz) {
+        if (clz.getTypeName() == null) {
             return;
         }
-        String newName = addModels(JavaConversions.mapAsJavaMap(ModelUtil.modelAndDependencies(clz.getClassName())));
+        String newName = addModels(JavaConversions.mapAsJavaMap(ModelUtil.modelAndDependencies(clz.getTypeName())));
         if (newName == null) {
-            responseTypes.add(clz.getClassLinkName());
+            responseTypes.add(clz.getTypeName());
             return;
         }
-        if (newName.equals(clz.getClassLinkName())) {
+        if (newName.equals(clz.getTypeName())) {
             responseTypes.add(newName);
         }
-
     }
 
     public void addResponseContentTypes(MustacheContentType responseContentTypes) {
@@ -145,7 +149,7 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
 
     public List<MustacheParameterSet> analyzeParameters(List<Parameter> parameters) {
         if (parameters == null) return null;
-        List<MustacheParameterSet> parameterList = new ArrayList<MustacheParameterSet>();
+        List<MustacheParameterSet> parameterList = new ArrayList<>();
 
         Map<String, List<MustacheParameter>> paraMap = toParameterTypeMap(parameters);
 
@@ -173,14 +177,14 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
     }
 
     private Map<String, List<MustacheParameter>> toParameterTypeMap(List<Parameter> parameters) {
-        Map<String, List<MustacheParameter>> paraMap = new HashMap<String, List<MustacheParameter>>();
+        Map<String, List<MustacheParameter>> paraMap = new HashMap<>();
 
         for (Parameter para : parameters) {
             MustacheParameter mustacheParameter = analyzeParameter(para);
 
             List<MustacheParameter> paraList = paraMap.get(para.paramType());
             if (paraList == null) {
-                paraList = new LinkedList<MustacheParameter>();
+                paraList = new LinkedList<>();
                 paraMap.put(para.paramType(), paraList);
             }
 
@@ -190,27 +194,25 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
     }
 
     private MustacheParameter analyzeParameter(Parameter para) {
-        MustacheParameter mustacheParameter = null;
-        mustacheParameter = new MustacheParameter(para);
+        MustacheParameter mustacheParameter = new MustacheParameter(para);
+        if (para.dataType() != null) {
+            List<String> parsedClasses = TypeUtils.parseClassNamesFromGenericString(para.dataType()).collectAllTypes();
+            for (String clazzName : parsedClasses) {
+                requestTypes.add(clazzName);
+            }
+        }
 
-        if (models.get(mustacheParameter.getLinkType()) == null) {
+        if (para.name() != null) {
             mustacheParameter.setName(para.name());
         } else {
-            if (mustacheParameter.getLinkType() != null) {
-                requestTypes.add(mustacheParameter.getLinkType());
-            }
-            if (para.name() != null) {
-                mustacheParameter.setName(para.name());
-            } else {
-                mustacheParameter.setName(para.dataType());
-            }
+            mustacheParameter.setName(para.dataType());
         }
 
         return mustacheParameter;
     }
 
     public List<MustacheItem> analyzeDataTypes(String responseClass) {
-        List<MustacheItem> mustacheItemList = new ArrayList<MustacheItem>();
+        List<MustacheItem> mustacheItemList = new ArrayList<>();
         if (responseClass == null || responseClass.equals(VOID)) {
             return mustacheItemList;
         }
@@ -226,8 +228,11 @@ public class MustacheDocument implements Comparable<MustacheDocument> {
                 ModelRef item = itemOption.isEmpty() ? null : itemOption.get();
 
                 if (mustacheItem.getType().equalsIgnoreCase(ARRAY)
-                    || mustacheItem.getType().equalsIgnoreCase(LIST)) {
+                        || mustacheItem.getType().equalsIgnoreCase(LIST)) {
                     handleArrayType(mustacheItem, item);
+                } else if (mustacheItem.getType().equalsIgnoreCase("map")) {
+                    String mapGenerics = item != null ? item.type() : "";
+                    mustacheItem.setType("Map[" + mapGenerics + "]");
                 } else if (models.get(mustacheItem.getType()) != null) {
                     responseTypes.add(mustacheItem.getType());
                 }

@@ -1,11 +1,11 @@
 package com.github.kongchen.swagger.docgen.mustache;
 
-import com.wordnik.swagger.model.Authorization;
-import com.wordnik.swagger.model.AuthorizationScope;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import com.wordnik.swagger.model.Authorization;
+import com.wordnik.swagger.model.AuthorizationScope;
 
 /**
  * Created by kong on 14-2-1.

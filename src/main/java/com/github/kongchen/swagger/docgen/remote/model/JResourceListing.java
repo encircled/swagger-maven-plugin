@@ -2,14 +2,10 @@ package com.github.kongchen.swagger.docgen.remote.model;
 
 import java.util.List;
 
-import com.wordnik.swagger.model.ApiInfo;
-import com.wordnik.swagger.model.ApiListingReference;
-import com.wordnik.swagger.model.AuthorizationType;
-
 /**
  * Created by chekong on 10/11/14.
  */
-public class JResourceListing   {
+public class JResourceListing {
 
     private String apiVersion;
     private String swaggerVersion;

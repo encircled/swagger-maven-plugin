@@ -1,13 +1,14 @@
 package com.github.kongchen.swagger.docgen;
 
-import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
-import org.testng.annotations.Test;
+import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertTrue;
 
 import java.io.File;
 
-import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.assertTrue;
+import com.github.kongchen.swagger.docgen.mavenplugin.ApiSource;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.log4j.Logger;
+import org.testng.annotations.Test;
 
 public class AbstractDocumentSourceTest {
 
@@ -43,7 +44,9 @@ public class AbstractDocumentSourceTest {
     }
 
     private AbstractDocumentSource getAbstractDocumentSource(final boolean useOutputFlatStructure) {
-        return new AbstractDocumentSource(new LogAdapter((Logger) null), null, null, null, null, useOutputFlatStructure, null, null) {
+        ApiSource apiSource = new ApiSource();
+        apiSource.setUseOutputFlatStructure(useOutputFlatStructure);
+        return new AbstractDocumentSource(new LogAdapter((Logger) null), apiSource) {
             @Override
             public void loadDocuments() throws Exception, GenerateException {
 

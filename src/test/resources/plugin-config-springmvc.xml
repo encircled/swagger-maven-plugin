@@ -25,15 +25,9 @@
                                 <license>Apache 2.0</license>
                                 <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</licenseUrl>
                             </apiInfo>
-                            <!--<apiSortComparator>com.github.kongchen.smp.jaxrsmparator</apiSortComparator>-->
-                            <outputTemplate>
-                                https://raw.github.com/kongchen/api-doc-template/master/v2.0/strapdown.html.mustache
-                            </outputTemplate>
-                            <outputPath>${basedir}/generated/document-springmvc.html</outputPath>
-                            <swaggerDirectory>generated/swagger-ui-springmvc</swaggerDirectory>
-                            <swaggerUIDocBasePath>http://www.example.com/restapi/doc</swaggerUIDocBasePath>
+                            <!--<apiSortComparator>com.github.kongchen.smp.jaxrsmparator</apiSortComparator> ${basedir}/src/main/resources/markdown.mustache-->
+                            <outputFolder>${basedir}/generated</outputFolder>
                             <useOutputFlatStructure>false</useOutputFlatStructure>
-                            <mustacheFileRoot>${basedir}/src/main/resources/</mustacheFileRoot>
                             <overridingModels>/swagger-overriding-models.json</overridingModels>
                             <swaggerInternalFilter>com.wordnik.swagger.config.DefaultSpecFilter</swaggerInternalFilter>
                         </apiSource>

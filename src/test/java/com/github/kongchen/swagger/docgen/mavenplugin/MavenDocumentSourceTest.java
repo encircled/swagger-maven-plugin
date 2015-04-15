@@ -1,27 +1,48 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
-import com.github.kongchen.model.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.ws.rs.core.MediaType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import com.github.kongchen.model.Address;
+import com.github.kongchen.model.BadIdResponse;
+import com.github.kongchen.model.Customer;
+import com.github.kongchen.model.Email;
+import com.github.kongchen.model.ForGeneric;
+import com.github.kongchen.model.ForGeneric2;
+import com.github.kongchen.model.G1;
+import com.github.kongchen.model.G2;
+import com.github.kongchen.model.JAnimal;
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.TestSwaggerApiReader;
 import com.github.kongchen.swagger.docgen.TypeUtils;
 import com.github.kongchen.swagger.docgen.filter.TestSwaggerSpecFilter;
-import com.github.kongchen.swagger.docgen.mustache.*;
+import com.github.kongchen.swagger.docgen.mustache.MustacheApi;
+import com.github.kongchen.swagger.docgen.mustache.MustacheDataType;
+import com.github.kongchen.swagger.docgen.mustache.MustacheDocument;
+import com.github.kongchen.swagger.docgen.mustache.MustacheItem;
+import com.github.kongchen.swagger.docgen.mustache.MustacheOperation;
+import com.github.kongchen.swagger.docgen.mustache.OutputTemplate;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 import org.apache.maven.plugin.logging.SystemStreamLog;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import javax.ws.rs.core.MediaType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.*;
-
-import static junit.framework.Assert.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,20 +53,18 @@ public class MavenDocumentSourceTest {
 
 
     private ApiSource prepare() {
-		ApiSource apiSource = new ApiSource();
+        ApiSource apiSource = new ApiSource();
         apiSource.setApiVersion("1.0");
         apiSource.setBasePath("http://example.com");
         apiSource.setLocations("com.github.kongchen.jaxrs.api.car;com.github.kongchen.jaxrs.api.garage");
-        apiSource.setOutputPath("sample.html");
-        apiSource.setOutputTemplate("https://github.com/kongchen/api-doc-template/blob/master/v1.1/html.mustache");
-        apiSource.setSwaggerDirectory(null);
+        apiSource.setOutputFolder("sample.html");
         apiSource.setOverridingModels("swagger-overriding-models.json");
-		return apiSource;
+        return apiSource;
     }
 
     @Test
     public void testIssue17() throws Exception, GenerateException {
-		ApiSource apiSource = prepare();
+        ApiSource apiSource = prepare();
         String locations = apiSource.getLocations();
         apiSource.setLocations("issue17");
         AbstractDocumentSource documentSource = new MavenDocumentSource(apiSource, new SystemStreamLog());
@@ -59,7 +78,7 @@ public class MavenDocumentSourceTest {
 
     @Test
     public void test() throws Exception, GenerateException {
-		ApiSource apiSource = prepare();
+        ApiSource apiSource = prepare();
         AbstractDocumentSource documentSource = new MavenDocumentSource(apiSource, new SystemStreamLog());
         documentSource.loadDocuments();
         OutputTemplate outputTemplate = new OutputTemplate(documentSource);
@@ -76,22 +95,6 @@ public class MavenDocumentSourceTest {
 
                             Assert.assertEquals(op.getParameters().size(), 4);
 
-                            Assert.assertEquals("ETag", op.getResponseHeader().getParas().get(0).getName());
-
-                            Assert.assertEquals("carId",
-                                    op.getRequestPath().getParas().get(0).getName());
-                            Assert.assertEquals("1.0 to 10.0",
-                                    op.getRequestPath().getParas().get(0).getAllowableValue());
-
-                            Assert.assertEquals("e",
-                                    op.getRequestQuery().getParas().get(0).getName());
-
-                            Assert.assertEquals("Accept",
-                                    op.getRequestHeader().getParas().get(0).getName());
-                            Assert.assertEquals("MediaType",
-                                    op.getRequestHeader().getParas().get(0).getType());
-                            Assert.assertEquals("application/json, application/*",
-                                    op.getRequestHeader().getParas().get(0).getAllowableValue());
                             Assert.assertEquals(op.getResponseMessages().size(), 2);
                             Assert.assertEquals(op.getResponseMessages().get(0).getMessage(), "Invalid ID supplied");
                             Assert.assertEquals(op.getResponseMessages().get(0).getCode(), 400);
@@ -148,60 +151,60 @@ public class MavenDocumentSourceTest {
     }
 
 
-	@Test
-	public void testSwaggerFilter() throws Exception, GenerateException {
-		ApiSource apiSource = prepare();
-		apiSource.setSwaggerInternalFilter(TestSwaggerSpecFilter.class.getName());
-		AbstractDocumentSource documentSource = new MavenDocumentSource(apiSource, new SystemStreamLog());
-		documentSource.loadDocuments();
-		OutputTemplate outputTemplate = new OutputTemplate(documentSource);
-		assertEquals(apiSource.getApiVersion(), outputTemplate.getApiVersion());
-		assertEquals(3, outputTemplate.getApiDocuments().size());
-		for (MustacheDocument doc : outputTemplate.getApiDocuments()) {
-			if (doc.getIndex() == 1) {
-				Assert.assertEquals(doc.getResourcePath(), "/car");
-				for (MustacheApi api : doc.getApis()) {
-					assertTrue(api.getUrl().startsWith(apiSource.getBasePath()));
-					assertFalse(api.getPath().contains("{format}"));
-					for (MustacheOperation op : api.getOperations()) {
-						if (op.getOpIndex() == 2) {
+    @Test
+    public void testSwaggerFilter() throws Exception, GenerateException {
+        ApiSource apiSource = prepare();
+        apiSource.setSwaggerInternalFilter(TestSwaggerSpecFilter.class.getName());
+        AbstractDocumentSource documentSource = new MavenDocumentSource(apiSource, new SystemStreamLog());
+        documentSource.loadDocuments();
+        OutputTemplate outputTemplate = new OutputTemplate(documentSource);
+        assertEquals(apiSource.getApiVersion(), outputTemplate.getApiVersion());
+        assertEquals(3, outputTemplate.getApiDocuments().size());
+        for (MustacheDocument doc : outputTemplate.getApiDocuments()) {
+            if (doc.getIndex() == 1) {
+                Assert.assertEquals(doc.getResourcePath(), "/car");
+                for (MustacheApi api : doc.getApis()) {
+                    assertTrue(api.getUrl().startsWith(apiSource.getBasePath()));
+                    assertFalse(api.getPath().contains("{format}"));
+                    for (MustacheOperation op : api.getOperations()) {
+                        if (op.getOpIndex() == 2) {
 
-							Assert.assertEquals(0, op.getParameters().size());
+                            Assert.assertEquals(0, op.getParameters().size());
 
-							Assert.assertEquals(op.getResponseMessages().size(), 2);
-							Assert.assertEquals(op.getResponseMessages().get(0).getMessage(), "Invalid ID supplied");
-							Assert.assertEquals(op.getResponseMessages().get(0).getCode(), 400);
-							Assert.assertEquals(op.getResponseMessages().get(1).getCode(), 404);
-							// Testing deprecated method. Should remove tests when deprecated method is gone
-							Assert.assertEquals(op.getErrorResponses().size(), 2);
-							Assert.assertEquals(op.getErrorResponses().get(0).getMessage(), "Invalid ID supplied");
-							Assert.assertEquals(op.getErrorResponses().get(0).getCode(), 400);
-							Assert.assertEquals(op.getErrorResponses().get(1).getCode(), 404);
-							Assert.assertEquals(op.getAuthorizations().get(0).getType(), "oauth2");
-							Assert.assertEquals(op.getAuthorizations().get(0).getAuthorizationScopes().get(0).description(), "car1 des get");
-						}
-						if (op.getOpIndex() == 1) {
-							Assert.assertEquals(op.getSummary(), "search cars");
-						}
-					}
-				}
-			}
-			if (doc.getIndex() == 2) {
-				Assert.assertEquals(doc.getResourcePath(), "/v2/car");
-			}
-			if (doc.getIndex() == 3) {
-				Assert.assertEquals(doc.getResourcePath(), "/garage");
-			}
+                            Assert.assertEquals(op.getResponseMessages().size(), 2);
+                            Assert.assertEquals(op.getResponseMessages().get(0).getMessage(), "Invalid ID supplied");
+                            Assert.assertEquals(op.getResponseMessages().get(0).getCode(), 400);
+                            Assert.assertEquals(op.getResponseMessages().get(1).getCode(), 404);
+                            // Testing deprecated method. Should remove tests when deprecated method is gone
+                            Assert.assertEquals(op.getErrorResponses().size(), 2);
+                            Assert.assertEquals(op.getErrorResponses().get(0).getMessage(), "Invalid ID supplied");
+                            Assert.assertEquals(op.getErrorResponses().get(0).getCode(), 400);
+                            Assert.assertEquals(op.getErrorResponses().get(1).getCode(), 404);
+                            Assert.assertEquals(op.getAuthorizations().get(0).getType(), "oauth2");
+                            Assert.assertEquals(op.getAuthorizations().get(0).getAuthorizationScopes().get(0).description(), "car1 des get");
+                        }
+                        if (op.getOpIndex() == 1) {
+                            Assert.assertEquals(op.getSummary(), "search cars");
+                        }
+                    }
+                }
+            }
+            if (doc.getIndex() == 2) {
+                Assert.assertEquals(doc.getResourcePath(), "/v2/car");
+            }
+            if (doc.getIndex() == 3) {
+                Assert.assertEquals(doc.getResourcePath(), "/garage");
+            }
 
-		}
+        }
 
 
-		assertEquals(11, outputTemplate.getDataTypes().size());
-		List<MustacheDataType> typeList = new LinkedList<MustacheDataType>();
-		for (MustacheDataType type : outputTemplate.getDataTypes()) {
-			typeList.add(type);
-		}
-		Collections.sort(typeList, new Comparator<MustacheDataType>() {
+        assertEquals(11, outputTemplate.getDataTypes().size());
+        List<MustacheDataType> typeList = new LinkedList<MustacheDataType>();
+        for (MustacheDataType type : outputTemplate.getDataTypes()) {
+            typeList.add(type);
+        }
+        Collections.sort(typeList, new Comparator<MustacheDataType>() {
 
             @Override
             public int compare(MustacheDataType o1, MustacheDataType o2) {
@@ -220,59 +223,59 @@ public class MavenDocumentSourceTest {
         assertDataTypeInList(typeList, 8, G2.class);
         assertDataTypeInList(typeList, 9, JAnimal.class);
         assertDataTypeInList(typeList, 10, com.github.kongchen.model.v2.Car.class);
-	}
+    }
 
-	@Test
-	public void testSwaggerApiReader() throws Exception {
-		ApiSource apiSource = prepare();
-		apiSource.setSwaggerApiReader(TestSwaggerApiReader.class.getName());
-		AbstractDocumentSource documentSource = new MavenDocumentSource(apiSource, new SystemStreamLog());
-		documentSource.loadDocuments();
-		OutputTemplate outputTemplate = new OutputTemplate(documentSource);
-		assertEquals(apiSource.getApiVersion(), outputTemplate.getApiVersion());
-		assertEquals(3, outputTemplate.getApiDocuments().size());
-		for (MustacheDocument doc : outputTemplate.getApiDocuments()) {
-			if (doc.getIndex() == 1) {
-				Assert.assertEquals(doc.getResourcePath(), "/car");
-				for (MustacheApi api : doc.getApis()) {
-					assertTrue(api.getUrl().startsWith(apiSource.getBasePath()));
-					assertFalse(api.getPath().contains("{format}"));
-					for (MustacheOperation op : api.getOperations()) {
-						Assert.assertEquals(op.getSummary(), "summary by the test swagger test filter");
-					}
-				}
-			}
+    @Test
+    public void testSwaggerApiReader() throws Exception {
+        ApiSource apiSource = prepare();
+        apiSource.setSwaggerApiReader(TestSwaggerApiReader.class.getName());
+        AbstractDocumentSource documentSource = new MavenDocumentSource(apiSource, new SystemStreamLog());
+        documentSource.loadDocuments();
+        OutputTemplate outputTemplate = new OutputTemplate(documentSource);
+        assertEquals(apiSource.getApiVersion(), outputTemplate.getApiVersion());
+        assertEquals(3, outputTemplate.getApiDocuments().size());
+        for (MustacheDocument doc : outputTemplate.getApiDocuments()) {
+            if (doc.getIndex() == 1) {
+                Assert.assertEquals(doc.getResourcePath(), "/car");
+                for (MustacheApi api : doc.getApis()) {
+                    assertTrue(api.getUrl().startsWith(apiSource.getBasePath()));
+                    assertFalse(api.getPath().contains("{format}"));
+                    for (MustacheOperation op : api.getOperations()) {
+                        Assert.assertEquals(op.getSummary(), "summary by the test swagger test filter");
+                    }
+                }
+            }
 
-		}
-	}
+        }
+    }
 
-	@Test
-	public void testSwaggerApiReaderDefaultConfig() throws Exception {
-		ApiSource apiSource = prepare();
-		AbstractDocumentSource documentSource = new MavenDocumentSource(apiSource, new SystemStreamLog());
-		documentSource.loadDocuments();
-		OutputTemplate outputTemplate = new OutputTemplate(documentSource);
-		assertEquals(apiSource.getApiVersion(), outputTemplate.getApiVersion());
-		assertEquals(3, outputTemplate.getApiDocuments().size());
-		for (MustacheDocument doc : outputTemplate.getApiDocuments()) {
-			if (doc.getIndex() == 1) {
-				Assert.assertEquals(doc.getResourcePath(), "/car");
-				for (MustacheApi api : doc.getApis()) {
-					assertTrue(api.getUrl().startsWith(apiSource.getBasePath()));
-					assertFalse(api.getPath().contains("{format}"));
-					for (MustacheOperation op : api.getOperations()) {
-						if (op.getOpIndex() == 1) {
-							Assert.assertEquals(op.getSummary(), "search cars");
-						}
-					}
-				}
-			}
+    @Test
+    public void testSwaggerApiReaderDefaultConfig() throws Exception {
+        ApiSource apiSource = prepare();
+        AbstractDocumentSource documentSource = new MavenDocumentSource(apiSource, new SystemStreamLog());
+        documentSource.loadDocuments();
+        OutputTemplate outputTemplate = new OutputTemplate(documentSource);
+        assertEquals(apiSource.getApiVersion(), outputTemplate.getApiVersion());
+        assertEquals(3, outputTemplate.getApiDocuments().size());
+        for (MustacheDocument doc : outputTemplate.getApiDocuments()) {
+            if (doc.getIndex() == 1) {
+                Assert.assertEquals(doc.getResourcePath(), "/car");
+                for (MustacheApi api : doc.getApis()) {
+                    assertTrue(api.getUrl().startsWith(apiSource.getBasePath()));
+                    assertFalse(api.getPath().contains("{format}"));
+                    for (MustacheOperation op : api.getOperations()) {
+                        if (op.getOpIndex() == 1) {
+                            Assert.assertEquals(op.getSummary(), "search cars");
+                        }
+                    }
+                }
+            }
 
-		}
-	}
+        }
+    }
 
     private void assertDataTypeInList(List<MustacheDataType> typeList, int indexInList,
-                                      Class<?> aClass) throws NoSuchMethodException, NoSuchFieldException {
+            Class<?> aClass) throws NoSuchMethodException, NoSuchFieldException {
         MustacheDataType dataType = typeList.get(indexInList);
         XmlRootElement root = aClass.getAnnotation(XmlRootElement.class);
         if (root == null) {

@@ -1,12 +1,11 @@
 package com.github.kongchen.swagger.docgen.remote.model;
 
 import com.wordnik.swagger.model.AllowableRangeValues;
-import com.wordnik.swagger.model.AllowableValues;
 
 /**
  * Created by chekong on 10/11/14.
  */
-public class JAllowableRangeValues extends JAllowableValues{
+public class JAllowableRangeValues extends JAllowableValues {
     private String min;
     private String max;
 

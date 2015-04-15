@@ -1,5 +1,10 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
 import com.github.kongchen.swagger.docgen.GenerateException;
 import com.github.kongchen.swagger.docgen.LogAdapter;
@@ -24,11 +29,6 @@ import scala.collection.JavaConversions;
 import scala.collection.immutable.Map$;
 import scala.collection.mutable.Buffer;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 /**
  * Created with IntelliJ IDEA.
  *
@@ -41,12 +41,9 @@ public class MavenDocumentSource extends AbstractDocumentSource {
     private final SpecFilter specFilter = new SpecFilter();
 
     public MavenDocumentSource(ApiSource apiSource, Log log) {
-        super(new LogAdapter(log), apiSource.getOutputPath(), apiSource.getOutputTemplate(),
-                apiSource.getSwaggerDirectory(), apiSource.mustacheFileRoot, apiSource.isUseOutputFlatStructure(),
-                apiSource.getOverridingModels(), apiSource.getApiSortComparator());
+        super(new LogAdapter(log), apiSource);
 
         setApiVersion(apiSource.getApiVersion());
-        setBasePath(apiSource.getBasePath());
         setApiInfo(apiSource.getApiInfo());
         this.apiSource = apiSource;
     }
@@ -72,7 +69,7 @@ public class MavenDocumentSource extends AbstractDocumentSource {
         for (Class c : apiSource.getValidClasses()) {
             ApiListing doc;
             try {
-                doc = getDocFromClass(c, swaggerConfig, getBasePath());
+                doc = getDocFromClass(c, swaggerConfig, apiSource.getBasePath());
             } catch (Exception e) {
                 throw new GenerateException(e);
             }
@@ -96,16 +93,16 @@ public class MavenDocumentSource extends AbstractDocumentSource {
             }
         });
         serviceDocument = new ResourceListing(swaggerConfig.apiVersion(), swaggerConfig.swaggerVersion(),
-                                              scala.collection.immutable.List.fromIterator(JavaConversions.asScalaIterator(apiListingReferences.iterator())),
-                                              scala.collection.immutable.List.fromIterator(JavaConversions.asScalaIterator(authorizationTypes.iterator())),
-                                              toSwaggerApiInfo(apiSource.getApiInfo()));
+                scala.collection.immutable.List.fromIterator(JavaConversions.asScalaIterator(apiListingReferences.iterator())),
+                scala.collection.immutable.List.fromIterator(JavaConversions.asScalaIterator(authorizationTypes.iterator())),
+                toSwaggerApiInfo(apiSource.getApiInfo()));
     }
 
     private Option<ApiInfo> toSwaggerApiInfo(ApiSourceInfo info) {
         if (info == null) return Option.empty();
         return Option.apply(new ApiInfo(info.getTitle(), info.getDescription(),
-            info.getTermsOfServiceUrl(), info.getContact(),
-            info.getLicense(), info.getLicenseUrl()));
+                info.getTermsOfServiceUrl(), info.getContact(),
+                info.getLicense(), info.getLicenseUrl()));
     }
 
     private ApiListing getDocFromClass(Class c, SwaggerConfig swaggerConfig, String basePath) throws Exception {
@@ -118,19 +115,19 @@ public class MavenDocumentSource extends AbstractDocumentSource {
         if (None.canEqual(apiListing)) return null;
 
         return specFilter.filter(apiListing.get(), FilterFactory.filter(),
-                                 Map$.MODULE$.<String, scala.collection.immutable.List<String>>empty(),
-                                 Map$.MODULE$.<String, String>empty(),
-                                 Map$.MODULE$.<String, scala.collection.immutable.List<String>>empty());
+                Map$.MODULE$.<String, scala.collection.immutable.List<String>>empty(),
+                Map$.MODULE$.<String, String>empty(),
+                Map$.MODULE$.<String, scala.collection.immutable.List<String>>empty());
     }
 
-	private ClassReader getApiReader() throws Exception {
-		if (apiSource.getSwaggerApiReader() == null) return new DefaultJaxrsApiReader();
-		try {
-			LOG.info("Reading api reader configuration: " + apiSource.getSwaggerApiReader());
-			return (ClassReader) Class.forName(apiSource.getSwaggerApiReader()).newInstance();
-		} catch (Exception e) {
-			throw new GenerateException("Cannot load swagger api reader: "
-					+ apiSource.getSwaggerApiReader(), e);
-		}
-	}
+    private ClassReader getApiReader() throws Exception {
+        if (apiSource.getSwaggerApiReader() == null) return new DefaultJaxrsApiReader();
+        try {
+            LOG.info("Reading api reader configuration: " + apiSource.getSwaggerApiReader());
+            return (ClassReader) Class.forName(apiSource.getSwaggerApiReader()).newInstance();
+        } catch (Exception e) {
+            throw new GenerateException("Cannot load swagger api reader: "
+                    + apiSource.getSwaggerApiReader(), e);
+        }
+    }
 }

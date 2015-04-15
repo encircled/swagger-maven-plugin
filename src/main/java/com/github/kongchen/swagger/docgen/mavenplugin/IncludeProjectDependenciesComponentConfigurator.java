@@ -1,6 +1,12 @@
 package com.github.kongchen.swagger.docgen.mavenplugin;
 
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.codehaus.classworlds.ClassRealm;
 import org.codehaus.plexus.component.configurator.AbstractComponentConfigurator;
 import org.codehaus.plexus.component.configurator.ComponentConfigurationException;
@@ -9,12 +15,6 @@ import org.codehaus.plexus.component.configurator.converters.composite.ObjectWit
 import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluationException;
 import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluator;
 import org.codehaus.plexus.configuration.PlexusConfiguration;
-
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A custom ComponentConfigurator which adds the project's runtime classpath elements
@@ -31,17 +31,17 @@ import java.util.List;
 public class IncludeProjectDependenciesComponentConfigurator extends AbstractComponentConfigurator {
 
 
-    public void configureComponent( Object component, PlexusConfiguration configuration,
-                                    ExpressionEvaluator expressionEvaluator, ClassRealm containerRealm,
-                                    ConfigurationListener listener )
+    public void configureComponent(Object component, PlexusConfiguration configuration,
+            ExpressionEvaluator expressionEvaluator, ClassRealm containerRealm,
+            ConfigurationListener listener)
             throws ComponentConfigurationException {
 
         addProjectDependenciesToClassRealm(expressionEvaluator, containerRealm);
 
         ObjectWithFieldsConverter converter = new ObjectWithFieldsConverter();
 
-        converter.processConfiguration( converterLookup, component, containerRealm.getClassLoader(), configuration,
-                expressionEvaluator, listener );
+        converter.processConfiguration(converterLookup, component, containerRealm.getClassLoader(), configuration,
+                expressionEvaluator, listener);
 
     }
 

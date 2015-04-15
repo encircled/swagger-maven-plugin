@@ -1,19 +1,24 @@
 package com.github.kongchen.swagger.docgen.mustache;
 
-import java.lang.reflect.Method;
-import java.util.*;
-
-import com.github.kongchen.swagger.docgen.GenerateException;
-import scala.collection.JavaConversions;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsonschema.JsonSchema;
 import com.github.kongchen.swagger.docgen.AbstractDocumentSource;
+import com.github.kongchen.swagger.docgen.StringTypeHolder;
 import com.github.kongchen.swagger.docgen.TypeUtils;
 import com.github.kongchen.swagger.docgen.mavenplugin.ApiSourceInfo;
 import com.wordnik.swagger.model.ApiDescription;
 import com.wordnik.swagger.model.ApiListing;
 import com.wordnik.swagger.model.Operation;
+import scala.collection.JavaConversions;
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,12 +29,12 @@ public class OutputTemplate {
     private String basePath;
 
     private String apiVersion;
-    
+
     private ApiSourceInfo apiInfo;
 
-    private List<MustacheDocument> apiDocuments = new ArrayList<MustacheDocument>();
+    private List<MustacheDocument> apiDocuments = new ArrayList<>();
 
-    private Set<MustacheDataType> dataTypes = new TreeSet<MustacheDataType>();
+    private Set<MustacheDataType> dataTypes = new TreeSet<>();
     private Comparator<MustacheApi> apiComparator;
 
     public OutputTemplate(AbstractDocumentSource docSource) {
@@ -50,11 +55,14 @@ public class OutputTemplate {
         return dataTypes;
     }
 
+    public void setDataTypes(Set<MustacheDataType> dataTypes) {
+        this.dataTypes = dataTypes;
+    }
+
     public void addDateType(MustacheDocument mustacheDocument, MustacheDataType dataType) {
-        if (dataTypes.contains(dataType)) {
+        if(!dataTypes.add(dataType)) {
             return;
         }
-        dataTypes.add(dataType);
         for (MustacheItem item : dataType.getItems()) {
             String trueType = TypeUtils.getTrueType(item.getType());
             if (trueType == null) {
@@ -100,19 +108,19 @@ public class OutputTemplate {
     private MustacheDocument createMustacheDocument(ApiListing swaggerDoc) {
         MustacheDocument mustacheDocument = new MustacheDocument(swaggerDoc);
 
-        final List<MustacheApi> apiList = new ArrayList<MustacheApi>(swaggerDoc.apis().length());
-        
+        final List<MustacheApi> apiList = new ArrayList<>(swaggerDoc.apis().length());
+
         for (scala.collection.Iterator<ApiDescription> it = swaggerDoc.apis().iterator(); it.hasNext(); ) {
             ApiDescription api = it.next();
 
             MustacheApi mustacheApi = new MustacheApi(swaggerDoc.basePath(), api);
 
-            for (scala.collection.Iterator<Operation> opIt  = api.operations().iterator(); opIt.hasNext(); ) {
+            for (scala.collection.Iterator<Operation> opIt = api.operations().iterator(); opIt.hasNext(); ) {
                 Operation op = opIt.next();
                 MustacheOperation mustacheOperation = new MustacheOperation(mustacheDocument, op);
                 mustacheApi.addOperation(mustacheOperation);
                 addResponseType(mustacheDocument, mustacheOperation.getResponseClass());
-                for (MustacheResponseClass responseClass : mustacheOperation.getResponseClasses()) {
+                for (StringTypeHolder responseClass : mustacheOperation.getResponseClasses()) {
                     addResponseType(mustacheDocument, responseClass);
                 }
             }
@@ -139,7 +147,7 @@ public class OutputTemplate {
             addDateType(mustacheDocument, dataType);
         }
 
-        Set<String> missedTypes = new LinkedHashSet<String>();
+        Set<String> missedTypes = new LinkedHashSet<>();
 
         for (String responseType : mustacheDocument.getResponseTypes()) {
             if (!mustacheDocument.getRequestTypes().contains(responseType)) {
@@ -171,7 +179,7 @@ public class OutputTemplate {
 
     private void filterDatatypes(Set<MustacheDataType> dataTypes) {
         Iterator<MustacheDataType> it = dataTypes.iterator();
-        while (it.hasNext()){
+        while (it.hasNext()) {
             MustacheDataType type = it.next();
 
             if (type.getItems() == null || type.getItems().size() == 0) {
@@ -180,22 +188,19 @@ public class OutputTemplate {
         }
     }
 
-    private void addResponseType(MustacheDocument mustacheDocument, MustacheResponseClass responseClass) {
+    private void addResponseType(MustacheDocument mustacheDocument, StringTypeHolder responseClass) {
         mustacheDocument.addResponseType(responseClass);
-        if (responseClass.getGenericClasses() != null) {
-            for (MustacheResponseClass mrc : responseClass.getGenericClasses()){
-                addResponseType(mustacheDocument, mrc);
-            }
+        for (StringTypeHolder g : responseClass.getGenerics()) {
+            addResponseType(mustacheDocument, g);
         }
     }
 
     private void feedSource(AbstractDocumentSource source) {
         setApiVersion(source.getApiVersion());
-        setBasePath(source.getBasePath());
         setApiInfo(source.getApiInfo());
         this.apiComparator = source.getApiSortComparator();
         for (ApiListing doc : source.getValidDocuments()) {
-            if (doc.apis().isEmpty()){
+            if (doc.apis().isEmpty()) {
                 continue;
             }
             MustacheDocument mustacheDocument = createMustacheDocument(doc);
@@ -212,10 +217,6 @@ public class OutputTemplate {
 
     private void addMustacheDocument(MustacheDocument mustacheDocument) {
         apiDocuments.add(mustacheDocument);
-    }
-
-    public void setDataTypes(Set<MustacheDataType> dataTypes) {
-        this.dataTypes = dataTypes;
     }
 
     private void handleAllZeroIndex() {

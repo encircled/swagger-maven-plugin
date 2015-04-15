@@ -66,7 +66,7 @@ There's a [sample here](https://github.com/kongchen/swagger-maven-example), fork
         <basePath>http://example.com</basePath>
         <outputTemplate>/markdown.mustache</outputTemplate>
         <mustacheFileRoot>${basedir}/src/main/resources/</mustacheFileRoot>
-        <outputPath>${basedir}/generated/document.html</outputPath>
+        <outputFolder>${basedir}/generated/document.html</outputFolder>
       </apiSource>
     </apiSources>
   </configuration>
@@ -137,7 +137,7 @@ If you cannot wait to try out the plugin, here's a [sample project](https://gith
           https://raw.github.com/kongchen/api-doc-template/master/v2.0/strapdown.html.mustache
         </outputTemplate>
         <mustacheFileRoot>${basedir}/src/main/resources/</mustacheFileRoot>
-        <outputPath>${basedir}/generated/document.html</outputPath>
+        <outputFolder>${basedir}/generated/document.html</outputFolder>
         <!---Document generation parameters END-->
 
         <!---Swagger JSON parameters BEGIN-->
@@ -205,7 +205,7 @@ The parameters of `apiInfo`:
 | `apiSortComparator` | You can specify an comparator to sort your apis in output document. The class should implements `Comparator<MustacheApi>`. Default is null which means there the order of your apis will be as same as the `swaggerApiReader`.|
 | `outputTemplate` | The path of a mustache template file, see more details in sections below.|
 | `mustacheFileRoot` | The root path of your mustache template file. |
-| `outputPath` | The path of generate-by-template document, not existed parent directories will be created. If you don't want to generate html api just don't set it. |
+| `outputFolder` | The path of generate-by-template document, not existed parent directories will be created. If you don't want to generate html api just don't set it. |
 
 
 ### Swager JSON parameters

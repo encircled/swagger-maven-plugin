@@ -26,9 +26,9 @@
                             </apiInfo>
                             <!--<apiSortComparator>com.github.kongchen.smp.integration.ApiComparator</apiSortComparator>-->
                             <outputTemplate>
-                                https://raw.github.com/kongchen/api-doc-template/master/v2.0/strapdown.html.mustache
+                               resources/strapdown.html.mustache
                             </outputTemplate>
-                            <outputPath>${basedir}/generated/document.html</outputPath>
+                            <outputFolder>${basedir}/generated/document.html</outputFolder>
                             <swaggerDirectory>generated/swagger-ui</swaggerDirectory>
                             <swaggerUIDocBasePath>http://www.example.com/restapi/doc</swaggerUIDocBasePath>
                             <useOutputFlatStructure>false</useOutputFlatStructure>

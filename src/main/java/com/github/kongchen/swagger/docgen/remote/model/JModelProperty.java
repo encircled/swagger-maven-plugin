@@ -1,6 +1,5 @@
 package com.github.kongchen.swagger.docgen.remote.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.github.kongchen.swagger.docgen.remote.JModelPropertyDeserializer;
 import com.github.kongchen.swagger.docgen.util.Utils;
